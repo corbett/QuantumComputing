@@ -33,6 +33,7 @@ CNOT=np.matrix('1 0 0 0; 0 1 0 0; 0 0 0 1; 0 0 1 0')
 ####
 ## States
 ####
+## One qubit states (basis)
 # standard basis (z)
 zero_state=np.matrix('1; 0')
 one_state=np.matrix('0; 1')
@@ -46,19 +47,83 @@ minusi_state=1/sqrt(2)*np.matrix([[1],[-i_]])  # also known as counterclockwise 
 # bell state = 1/sqrt(2)(|00>+|11>")
 bell_state = 1/sqrt(2)*np.matrix('1 0; 0 1')
 
-# It seems to me to derive the ordering you do ((+) is outer product):
-# Symbolically: |00> = |0> (+) |0>; gives 2x2 matrix which is then rewritten as 4x1 matrix by enumerate elements of rows from row 0
-# In Python: (zero_state*zero_state.conjugate().transpose()).reshape(4,1)
-two_qubits_00=np.matrix('1; 0; 0; 0')
-two_qubits_01=np.matrix('0; 1; 0; 0')
-two_qubits_10=np.matrix('0; 0; 1; 0')
-two_qubits_11=np.matrix('0; 0; 0; 1')
+## Two qubit states (basis)
+# To derive the ordering you do ((+) is outer product):
+# Symbolically: |00> = |0> (+) |0>; gives 4x1 
+# In Python: np.kron(zero_state,zero_state)
+two_qubits_00=np.kron(zero_state,zero_state)
+two_qubits_01=np.kron(zero_state,one_state)
+two_qubits_10=np.kron(one_state,zero_state)
+two_qubits_11=np.kron(one_state,one_state)
 
 # To operate a gate which operates on one qubit on elements of entangled 2-qubit state
-qubits_00_state=np.matrix('1 0; 0 0')
-qubits_01_state=np.matrix('0 1; 0 0')
-qubits_10_state=np.matrix('0 0; 1 0')
-qubits_11_state=np.matrix('0 0; 0 1')
+# TODO: I think I should rather change the operator than the state, but this passes the test cases
+qubits_00_state=two_qubits_00.reshape(2,2)
+qubits_01_state=two_qubits_01.reshape(2,2)
+qubits_10_state=two_qubits_10.reshape(2,2)
+qubits_11_state=two_qubits_11.reshape(2,2)
+
+## Three qubit states (basis)
+three_qubits_000=np.kron(two_qubits_00,zero_state)
+three_qubits_001=np.kron(two_qubits_00,one_state)
+three_qubits_010=np.kron(two_qubits_01,zero_state)
+three_qubits_011=np.kron(two_qubits_01,one_state)
+three_qubits_100=np.kron(two_qubits_10,zero_state)
+three_qubits_101=np.kron(two_qubits_10,one_state)
+three_qubits_110=np.kron(two_qubits_11,zero_state)
+three_qubits_111=np.kron(two_qubits_11,one_state)
+
+# Four qubit states (basis)
+four_qubits_0000=np.kron(three_qubits_000,zero_state)
+four_qubits_0001=np.kron(three_qubits_000,one_state)
+four_qubits_0010=np.kron(three_qubits_001,zero_state)
+four_qubits_0011=np.kron(three_qubits_001,one_state)
+four_qubits_0100=np.kron(three_qubits_010,zero_state)
+four_qubits_0101=np.kron(three_qubits_010,one_state)
+four_qubits_0110=np.kron(three_qubits_011,zero_state)
+four_qubits_0111=np.kron(three_qubits_011,one_state)
+four_qubits_1000=np.kron(three_qubits_100,zero_state)
+four_qubits_1001=np.kron(three_qubits_100,one_state)
+four_qubits_1010=np.kron(three_qubits_101,zero_state)
+four_qubits_1011=np.kron(three_qubits_101,one_state)
+four_qubits_1100=np.kron(three_qubits_110,zero_state)
+four_qubits_1101=np.kron(three_qubits_110,one_state)
+four_qubits_1110=np.kron(three_qubits_111,zero_state)
+four_qubits_1111=np.kron(three_qubits_111,one_state)
+
+# Five qubit states (basis)
+five_qubits_00000=np.kron(four_qubits_0000,zero_state)
+five_qubits_00001=np.kron(four_qubits_0000,one_state)
+five_qubits_00010=np.kron(four_qubits_0001,zero_state)
+five_qubits_00011=np.kron(four_qubits_0001,one_state)
+five_qubits_00100=np.kron(four_qubits_0010,zero_state)
+five_qubits_00101=np.kron(four_qubits_0010,one_state)
+five_qubits_00110=np.kron(four_qubits_0011,zero_state)
+five_qubits_00111=np.kron(four_qubits_0011,one_state)
+five_qubits_01000=np.kron(four_qubits_0100,zero_state)
+five_qubits_01001=np.kron(four_qubits_0100,one_state)
+five_qubits_01010=np.kron(four_qubits_0101,zero_state)
+five_qubits_01011=np.kron(four_qubits_0101,one_state)
+five_qubits_01100=np.kron(four_qubits_0110,zero_state)
+five_qubits_01101=np.kron(four_qubits_0110,one_state)
+five_qubits_01110=np.kron(four_qubits_0111,zero_state)
+five_qubits_01111=np.kron(four_qubits_0111,one_state)
+five_qubits_10000=np.kron(four_qubits_1000,zero_state)
+five_qubits_10001=np.kron(four_qubits_1000,one_state)
+five_qubits_10010=np.kron(four_qubits_1001,zero_state)
+five_qubits_10011=np.kron(four_qubits_1001,one_state)
+five_qubits_10100=np.kron(four_qubits_1010,zero_state)
+five_qubits_10101=np.kron(four_qubits_1010,one_state)
+five_qubits_10110=np.kron(four_qubits_1011,zero_state)
+five_qubits_10111=np.kron(four_qubits_1011,one_state)
+five_qubits_11000=np.kron(four_qubits_1100,zero_state)
+five_qubits_11001=np.kron(four_qubits_1100,one_state)
+five_qubits_11010=np.kron(four_qubits_1101,zero_state)
+five_qubits_11011=np.kron(four_qubits_1101,one_state)
+five_qubits_11100=np.kron(four_qubits_1110,zero_state)
+five_qubits_11101=np.kron(four_qubits_1110,one_state)
+five_qubits_11110=np.kron(four_qubits_1111,zero_state)
+five_qubits_11111=np.kron(four_qubits_1111,one_state)
 
 def get_probability(coeff):
 	return (coeff*coeff.conjugate()).real
@@ -342,6 +407,35 @@ class TestBellState(unittest.TestCase):
 		abs_chsh_c = abs(corex_zw) + abs(corex_zv) + abs(corex_xw) + abs(-corex_xv) 
 		self.assertAlmostEqual(abs_chsh_c,2*sqrt(2))
 		
+class TestMultiQubitStates(unittest.TestCase):
+	def test_basis(self):
+		# Sanity checks
+		# 1-qubit
+		self.assertTrue(np.allclose(zero_state+one_state,np.matrix('1; 1')))
+		eye=np.eye(2,2)
+		for row,state in enumerate([zero_state,one_state]):
+			self.assertTrue(np.allclose(state.transpose(),eye[row]))
+		# 2-qubit
+		self.assertTrue(np.allclose(two_qubits_00+two_qubits_01+two_qubits_10+two_qubits_11,np.matrix('1; 1; 1; 1')))
+		eye=np.eye(4,4)
+		for row,state in enumerate([two_qubits_00,two_qubits_01,two_qubits_10,two_qubits_11]):
+			self.assertTrue(np.allclose(state.transpose(),eye[row]))
+		# 3-qubit
+		self.assertTrue(np.allclose(three_qubits_000+three_qubits_001+three_qubits_010+three_qubits_011+three_qubits_100+three_qubits_101+three_qubits_110+three_qubits_111,np.matrix('1; 1; 1; 1; 1; 1; 1; 1')))
+		eye=np.eye(8,8)
+		for row,state in enumerate([three_qubits_000,three_qubits_001,three_qubits_010,three_qubits_011,three_qubits_100,three_qubits_101,three_qubits_110,three_qubits_111]):
+			self.assertTrue(np.allclose(state.transpose(),eye[row]))
+		# 4-qubit
+		self.assertTrue(np.allclose(four_qubits_0000+four_qubits_0001+four_qubits_0010+four_qubits_0011+four_qubits_0100+four_qubits_0101+four_qubits_0110+four_qubits_0111+four_qubits_1000+four_qubits_1001+four_qubits_1010+four_qubits_1011+four_qubits_1100+four_qubits_1101+four_qubits_1110+four_qubits_1111,np.matrix('1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1')))
+		eye=np.eye(16,16)
+		for row,state in enumerate([four_qubits_0000,four_qubits_0001,four_qubits_0010,four_qubits_0011,four_qubits_0100,four_qubits_0101,four_qubits_0110,four_qubits_0111,four_qubits_1000,four_qubits_1001,four_qubits_1010,four_qubits_1011,four_qubits_1100,four_qubits_1101,four_qubits_1110,four_qubits_1111]):
+			self.assertTrue(np.allclose(state.transpose(),eye[row]))
+		# 5-qubit
+		self.assertTrue(np.allclose(five_qubits_00000+five_qubits_00001+five_qubits_00010+five_qubits_00011+five_qubits_00100+five_qubits_00101+five_qubits_00110+five_qubits_00111+five_qubits_01000+five_qubits_01001+five_qubits_01010+five_qubits_01011+five_qubits_01100+five_qubits_01101+five_qubits_01110+five_qubits_01111+five_qubits_10000+five_qubits_10001+five_qubits_10010+five_qubits_10011+five_qubits_10100+five_qubits_10101+five_qubits_10110+five_qubits_10111+five_qubits_11000+five_qubits_11001+five_qubits_11010+five_qubits_11011+five_qubits_11100+five_qubits_11101+five_qubits_11110+five_qubits_11111,np.matrix('1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 1')))
+		eye=np.eye(32,32)
+		for row,state in enumerate([five_qubits_00000,five_qubits_00001,five_qubits_00010,five_qubits_00011,five_qubits_00100,five_qubits_00101,five_qubits_00110,five_qubits_00111,five_qubits_01000,five_qubits_01001,five_qubits_01010,five_qubits_01011,five_qubits_01100,five_qubits_01101,five_qubits_01110,five_qubits_01111,five_qubits_10000,five_qubits_10001,five_qubits_10010,five_qubits_10011,five_qubits_10100,five_qubits_10101,five_qubits_10110,five_qubits_10111,five_qubits_11000,five_qubits_11001,five_qubits_11010,five_qubits_11011,five_qubits_11100,five_qubits_11101,five_qubits_11110,five_qubits_11111]):
+			self.assertTrue(np.allclose(state.transpose(),eye[row]))
+
 class TestQuantumComputer(unittest.TestCase):
 	def setUp(self):
 		self.qc=QuantumComputer()
