@@ -572,32 +572,53 @@ class TestMultiQubitStates(unittest.TestCase):
 		for row,state in enumerate([self.five_qubits_00000,self.five_qubits_00001,self.five_qubits_00010,self.five_qubits_00011,self.five_qubits_00100,self.five_qubits_00101,self.five_qubits_00110,self.five_qubits_00111,self.five_qubits_01000,self.five_qubits_01001,self.five_qubits_01010,self.five_qubits_01011,self.five_qubits_01100,self.five_qubits_01101,self.five_qubits_01110,self.five_qubits_01111,self.five_qubits_10000,self.five_qubits_10001,self.five_qubits_10010,self.five_qubits_10011,self.five_qubits_10100,self.five_qubits_10101,self.five_qubits_10110,self.five_qubits_10111,self.five_qubits_11000,self.five_qubits_11001,self.five_qubits_11010,self.five_qubits_11011,self.five_qubits_11100,self.five_qubits_11101,self.five_qubits_11110,self.five_qubits_11111]):
 			self.assertTrue(np.allclose(state.transpose(),eye[row]))
 
-	# TODO: fix these elements; tests failing
 	def test_separate_state(self):
-		print 'test separated_state'
-		value_group=State.separate_state(self.five_qubits_11010)
-		target_group=(State.one_state,State.one_state,State.zero_state,State.one_state,State.zero_state)
-		for value_state,target_state in zip(value_group,target_group):
-			self.assertTrue(np.allclose(value_state,target_state)) 			
+		value_groups=[State.separate_state(self.five_qubits_11010),
+			State.separate_state(self.four_qubits_0101),
+			State.separate_state(self.three_qubits_000),
+			State.separate_state(self.three_qubits_111),
+			State.separate_state(self.three_qubits_101),
+			State.separate_state(self.two_qubits_00),
+			State.separate_state(self.two_qubits_01),
+			State.separate_state(self.two_qubits_10),
+			State.separate_state(self.two_qubits_11),
+			State.separate_state(State.zero_state),
+			State.separate_state(State.one_state)]
 
+		target_groups=[(State.one_state,State.one_state,State.zero_state,State.one_state,State.zero_state),
+			(State.zero_state,State.one_state,State.zero_state,State.one_state),
+			(State.zero_state,State.zero_state,State.zero_state),
+			(State.one_state,State.one_state,State.one_state),
+			(State.one_state,State.zero_state,State.one_state),
+			(State.zero_state,State.zero_state),
+			(State.zero_state,State.one_state),
+			(State.one_state,State.zero_state),
+			(State.one_state,State.one_state),
+			(State.zero_state),
+			(State.one_state)]
+		for vg,tg in zip(value_groups,target_groups):
+			for value_state,target_state in zip(value_groups,target_groups):
+				self.assertTrue(np.allclose(value_state,target_state)) 			
 
-	# def test_string_from_state(self):
-	# 	self.assertEqual(State.string_from_state(State.zero_state),'0')
-	# 	self.assertEqual(State.string_from_state(State.one_state),'1')
-	# 	self.assertEqual(State.string_from_state(self.two_qubits_00),'00')
-	# 	self.assertEqual(State.string_from_state(self.two_qubits_01),'01')
-	# 	self.assertEqual(State.string_from_state(self.two_qubits_10),'10')
-	# 	self.assertEqual(State.string_from_state(self.two_qubits_11),'11')
-	# 	self.assertEqual(State.string_from_state(self.three_qubits_110),'110')
-	# 	self.assertEqual(State.string_from_state(self.four_qubits_1101),'1101')
-	# 	self.assertEqual(State.string_from_state(self.five_qubits_11010),'11010')
+	def test_string_from_state(self):
+		self.assertEqual(State.string_from_state(State.zero_state),'0')
+		self.assertEqual(State.string_from_state(State.one_state),'1')
+		self.assertEqual(State.string_from_state(self.two_qubits_00),'00')
+		self.assertEqual(State.string_from_state(self.two_qubits_01),'01')
+		self.assertEqual(State.string_from_state(self.two_qubits_10),'10')
+		self.assertEqual(State.string_from_state(self.two_qubits_11),'11')
+		self.assertEqual(State.string_from_state(self.three_qubits_110),'110')
+		self.assertEqual(State.string_from_state(self.four_qubits_1101),'1101')
+		self.assertEqual(State.string_from_state(self.five_qubits_11010),'11010')
 
-	# def test_state_from_string(self):
-	# 	for value_group,target_group in zip(['0','1','00','01','10','11','110','1101','11010'],
-	# 							[(State.zero_state),(State.one_state),(State.zero_state,State.zero_state),(State.zero_state,State.one_state),(State.one_state,State.zero_state),(State.one_state,State.one_state),(State.one_state,State.one_state,State.zero_state),(State.one_state,State.one_state,State.zero_state,State.one_state),(State.one_state,State.one_state,State.zero_state,State.one_state,State.zero_state)]):
-	# 		value_group=State.separate_state(State.state_from_string(value_group))
-	# 		for value_state,target_state in zip(value_group,target_group):
-	# 			self.assertTrue(np.allclose(value_state,target_state)) 			
+	def test_state_from_string(self):
+		for value_group,target_group in zip(['0','1','00','01','10','11','110','1101','11010'],
+								[[State.zero_state],[State.one_state],[State.zero_state,State.zero_state],[State.zero_state,State.one_state],[State.one_state,State.zero_state],[State.one_state,State.one_state],[State.one_state,State.one_state,State.zero_state],[State.one_state,State.one_state,State.zero_state,State.one_state],[State.one_state,State.one_state,State.zero_state,State.one_state,State.zero_state]]):
+			self.assertEqual(value_group,State.string_from_state(State.state_from_string(value_group)))
+			value_group=State.separate_state(State.state_from_string(value_group))
+			self.assertEqual(len(value_group),len(target_group))
+			for value_state,target_state in zip(value_group,target_group):
+				self.assertTrue(np.allclose(value_state,target_state)) 			
 
 
 
