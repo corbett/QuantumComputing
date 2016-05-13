@@ -6,6 +6,7 @@ import unittest
 import re
 import random
 import exceptions
+import itertools
 from math import sqrt,pi,e,log
 ####
 ## Gates
@@ -39,7 +40,7 @@ class Gate(object):
 	CNOT=np.matrix('1 0 0 0; 0 1 0 0; 0 0 0 1; 0 0 1 0')
 	# Later may want to remove these, but currently codifying knowledge
 	# control is qubit 1 target is qubit 0 
-	CNOT10=np.matrix('1 0 0 0; 0 0 0 1; 0 0 1 0; 0 1 0 0') 
+	CNOT10=np.kron(H,H)*CNOT*np.kron(H,H) #=np.matrix('1 0 0 0; 0 0 0 1; 0 0 1 0; 0 1 0 0') 
 	# operates on 2/3 qubits, control is first subscript, target second
 	CNOT3_01=np.kron(CNOT,eye)
 	CNOT3_10=np.kron(CNOT10,eye)
@@ -65,9 +66,8 @@ class State(object):
 	plusi_state=1/sqrt(2)*np.matrix([[1],[i_]])    # also known as clockwise arrow state
 	minusi_state=1/sqrt(2)*np.matrix([[1],[-i_]])  # also known as counterclockwise arrow state
 
-	# bell state = 1/sqrt(2)(|00>+|11>")
-	bell_state = 1/sqrt(2)*np.matrix('1 0; 0 1')
-
+	# 2-qubit states
+	bell_state=1/sqrt(2)*np.matrix('1; 0; 0; 1')
 	@staticmethod
 	def change_to_x_basis(state):
 		return Gate.H*state
@@ -113,6 +113,10 @@ class State(object):
 	@staticmethod
 	def get_fifth_qubit(qubit_state):
 		return State.separate_state(qubit_state)[4]
+
+	@staticmethod 
+	def all_state_strings(n_qubits):
+		return [''.join(map(str,state_desc)) for state_desc in itertools.product([0, 1], repeat=n_qubits)]
 
 	@staticmethod
 	def state_from_string(qubit_state_string):
@@ -170,38 +174,12 @@ class State(object):
 		"""finally some probabilities, whee. To properly use, set the qubit you measure to the result of this function
 			to collapse it. state=measure(state). Currently supports only up to three entangled qubits """
 		state_z=state
-
-		if Qubit.num_qubits(state)==1:
-			prob_zero_state=(state_z.item(0)*state_z.item(0).conjugate()).real
-			prob_one_state=(state_z.item(1)*state_z.item(1).conjugate()).real
-			rand=random.random()
-			if rand<prob_zero_state:
-				return State.zero_state
-			if rand==prob_zero_state:
-				return random.choice([State.zero_state,State.one_state])
-			else:
-				return State.one_state
-
-		elif Qubit.num_qubits(state)==2:
-			prob_00_state=(state_z.item(0)*state_z.item(0).conjugate()).real
-			prob_01_state=(state_z.item(1)*state_z.item(1).conjugate()).real
-			prob_10_state=(state_z.item(2)*state_z.item(2).conjugate()).real
-			prob_11_state=(state_z.item(3)*state_z.item(3).conjugate()).real
-						
-			rand=random.random()
-			if rand<prob_00_state:
-				return State.state_from_string('00')
-			elif rand<prob_01_state+prob_00_state:
-				return State.state_from_string('01')
-			elif rand<prob_00_state+prob_01_state+prob_10_state:
-				return State.state_from_string('10')
-			else:
-				return State.state_from_string('11')
-
-		elif Qubit.num_qubits==3:
-			raise Exception("Measuring 3 entangled states curently not supported")
-		else:
-			raise Exception("Measuring more than 3 entangled states curently not supported")
+		n_qubits=Qubit.num_qubits(state)
+		probs=Probability.get_probabilities(state_z)
+		rand=random.random()
+		for idx,state_desc in enumerate(State.all_state_strings(n_qubits)):
+			if rand < sum(probs[0:(idx+1)]):
+				return State.state_from_string(state_desc)
 
 	@staticmethod
 	def get_bloch(state):
@@ -227,28 +205,21 @@ class Probability(object):
 
 	@staticmethod
 	def pretty_print_probabilities(state):
-		if state.shape == (2,2):
-			sa00,sa01,sa10,sa11=state.item(0),state.item(1),state.item(2),state.item(3)
-			p00,p01,p10,p11=[Probability.get_probability(x) for x in [sa00,sa01,sa10,sa11]]
-			print """
-			%r|00>+%r|01>+%r|10>+%r|11>:
-			Pr(|00>)=%f; Pr(|01>)=%f; Pr(|10>)=%f; Pr(|11>)=%f
-			<state> = %f
-			""" % (sa00,sa01,sa10,sa11,p00,p01,p10,p11,p00+p11-p01-p10)
-		elif state.shape == (2,1):
-			print """
-			%r|0>+%r|1>:
-			Pr(|0>)=%f
-			Pr(|1>)=%f
-			""" % (state.item(0),
-				state.item(1),
-				Probability.get_probability(state.item(0)),
-				Probability.get_probability(state.item(1))
-				)
-		elif state.shape == (4,1):
-			Probability.pretty_print_probabilities(state.reshape(2,2))
-		else:
-			print "don't recognize this shape cannot pretty print"
+		probs=Probability.get_probabilities(state)
+		am_desc='|psi>='
+		pr_desc=''
+		for am,pr,state_desc in zip(state.flat,probs,State.all_state_strings(Qubit.num_qubits(state))):
+			if am!=0:
+				if am!=1:
+					am_desc+='%r|%s>+'%(am,state_desc)
+				else:
+					am_desc+='|%s>+'%(am,state_desc)
+			if pr!=0:
+				pr_desc+='Pr(|%s>)|=%f; '%(state_desc,pr)
+		print am_desc[0:-1]
+		print pr_desc
+		if state.shape==(4,1):
+			print "<state>=%f" % probs[0]+probs[3]-probs[1]-probs[2]
 
 	@staticmethod
 	def expectation_x(state):
@@ -276,18 +247,18 @@ class Qubit(object):
 		self.entangled=None
 		self.state=state
 		self.name = name
-		self.noop = False # after a measurement set this so that we can allow no further operations. Set to Bloch coords if bloch operation performed
+		self.noop = [] # after a measurement set this so that we can allow no further operations. Set to Bloch coords if bloch operation performed
 	@staticmethod
 	def num_qubits(state):	
 		num_qubits=log(state.shape[0],2)
 		if state.shape[1]!=1 or num_qubits not in [1,2,3,4,5]:
 			raise Exception("unrecognized state shape")
 		else:
-			return num_qubits
+			return int(num_qubits)
 	def get_num_qubits(self):
 		return Qubit.num_qubits(self.state)
 	def __eq__(self,other):
-		return self.name==other.name and self.noop==other.noop and np.allclose(self.state,other.state) and (self.entangled==other.entangled==None or set(self.entangled)==set(other.entangled)) 
+		return self.name==other.name and np.allclose(self.noop,other.noop) and np.allclose(self.state,other.state) and (self.entangled==other.entangled==None or set(self.entangled)==set(other.entangled)) 
 
 class QubitCollection(object):
 	def __init__(self,qubits):
@@ -301,7 +272,7 @@ class QubitCollection(object):
 			for nm,qubit in self.qubits.items():
 				if qubit.entangled and nm in qubit.entangled:
 					return qubit
-
+		raise Exception("qubit %s not found" % name)
 	def remove_qubit_named(self,name):
 		del self.qubits[name]
 	
@@ -347,7 +318,7 @@ class QuantumComputer(object):
 					entangled_gate=np.kron(entangled_gate,Gate.eye)
 			on_qubit.state=entangled_gate*on_qubit.state
 
-	def apply_two_qubit_gate(self,gate,first_qubit_name,second_qubit_name):
+	def apply_two_qubit_gate_CNOT(self,first_qubit_name,second_qubit_name):
 		""" Currently this only supports the CNOT gate!"""
 		first_qubit=self.qubits.get_qubit_named(first_qubit_name)
 		second_qubit=self.qubits.get_qubit_named(second_qubit_name)
@@ -358,7 +329,7 @@ class QuantumComputer(object):
 				raise Exception("Both qubits are marked as not entangled but one or the other has an entangled state")
 			# currently only supported if we only have one target qubit (ourselves) and output is easily separated
 			combined_state=np.kron(first_qubit.state,second_qubit.state)
-			new_state=gate*combined_state
+			new_state=Gate.CNOT*combined_state
 			if State.is_separable(new_state):
 				second_qubit.state=State.get_second_qubit(new_state)
 			else:
@@ -372,8 +343,9 @@ class QuantumComputer(object):
 		on_qubit.noop=State.get_bloch(on_qubit.state)
 	def measure(self,qubit_name):
 		on_qubit=self.qubits.get_qubit_named(qubit_name)
-		on_qubit.state=State.measure(on_qubit.state)
-		on_qubit.noop=True
+		if len(on_qubit.noop)==0:
+			on_qubit.noop=on_qubit.state # state before measurement for testing
+			on_qubit.state=State.measure(on_qubit.state)
 
 	def execute(self,program):
 		"""Time for some very lazy meta programming!
@@ -407,12 +379,197 @@ class QuantumComputer(object):
 			if cnot:
 				control_qubit=cnot.group(1)
 				target_qubit=cnot.group(2)
-				l='self.apply_two_qubit_gate(Gate.CNOT,%s,%s'%(control_qubit,target_qubit)
+				l='self.apply_two_qubit_gate_CNOT(%s,%s'%(control_qubit,target_qubit)
 			for k,v in translation:
 				l=l.replace(k,v)
 			l=l+')'
 			# Now running the code
 			exec l
+
+
+class Program(object):
+	def __init__(self,code,result_probability=[]):
+		self.code=code
+
+class Programs(object):
+	"""Some useful programs collected in one place for running on the quantum computer class"""
+	program_blue_state=Program("""h q[1];
+			t q[1];
+			h q[1];
+			t q[1];
+			h q[1];
+			t q[1];
+			s q[1];
+			h q[1];
+			t q[1];
+			h q[1];
+			t q[1];
+			s q[1];
+			h q[1];
+			bloch q[1];""")
+	program_test_XYZMeasureIdSdagTdag=Program("""sdg q[0];
+			x q[1];
+			x q[2];
+			id q[3];
+			z q[4];
+			tdg q[0];
+			y q[4];
+			measure q[0];
+			measure q[1];
+			measure q[2];
+			measure q[3];
+			measure q[4];""")
+	program_test_cnot=Program("""x q[1];
+			cx q[1], q[2];""")
+	program_test_many=Program("""sdg q[0];
+			x q[1];
+			x q[2];
+			id q[3];
+			z q[4];
+			tdg q[0];
+			cx q[1], q[2];
+			y q[4];
+			measure q[0];
+			measure q[1];
+			measure q[2];
+			measure q[3];
+			measure q[4];""")
+	program_zz=Program("""h q[1];
+		cx q[1], q[2];
+		measure q[1];
+		measure q[2];""") # "00",0.5; "11",0.5 # <zz> = 2
+
+	program_zw=Program("""h q[1];
+		cx q[1], q[2];
+		s q[2];
+		h q[2];
+		t q[2];
+		h q[2];
+		measure q[1];
+		measure q[2]""") # "00",0.426777; "01",0.073223; "10",0.073223; "11",0.426777 # <zw> = 1/sqrt(2)
+
+	program_zv=Program("""h q[1];
+		cx q[1], q[2];
+		s q[2];
+		h q[2];
+		tdg q[2];
+		h q[2];
+		measure q[1];
+		measure q[2];""") #"00",0.426777; "01",0.073223; "10",0.073223; "11",0.426777 # <zv> = 1/sqrt(2)
+
+	program_xw=Program("""h q[1];
+		cx q[1], q[2];
+		h q[1];
+		s q[2];
+		h q[2];
+		t q[2];
+		h q[2];
+		measure q[1];
+		measure q[2];""") # "00",0.426777; "01",0.073223; "10",0.073223; "11",0.426777 # <xw> = 
+
+	program_xv=Program("""h q[1];
+		cx q[1], q[2];
+		h q[1];
+		s q[2];
+		h q[2];
+		tdg q[2];
+		h q[2];
+		measure q[1];
+		measure q[2];""") #"00",0.073223; "01",0.426777; "10",0.426777; "11",0.073223; # <xv> =
+	# Currently not used, but creats a superposition of 00 and 01
+	program_00_01_super=Program("""sdg q[1];
+		t q[1];
+		t q[1];
+		s q[1];
+		h q[1];
+		h q[0];
+		h q[1];
+		h q[0];
+		h q[1];
+		cx q[0], q[1];
+		measure q[0];
+		measure q[1];""")
+
+	program_ghz=Program("""h q[0];
+		h q[1];
+		x q[2];
+		cx q[1], q[2];
+		cx q[0], q[2];
+		h q[0];
+		h q[1];
+		h q[2];
+		measure q[0];
+		measure q[1];
+		measure q[2];""")# "000":0.5; "111":0.5
+
+
+	# now we measure it
+	program_ghz_measure_yyx=Program("""h q[0];
+		h q[1];
+		x q[2];
+		cx q[1], q[2];
+		cx q[0], q[2];
+		h q[0];
+		h q[1];
+		h q[2];
+		sdg q[0];
+		sdg q[1];
+		h q[2];
+		h q[0];
+		h q[1];
+		measure q[2];
+		measure q[0];
+		measure q[1];""") # "000":0.25; "011": 0.25; "101": 0.25; "110":0.25
+
+	program_ghz_measure_yxy=Program("""h q[0];
+		h q[1];
+		x q[2];
+		cx q[1], q[2];
+		cx q[0], q[2];
+		h q[0];
+		h q[1];
+		h q[2];
+		sdg q[0];
+		h q[1];
+		sdg q[2];
+		h q[0];
+		measure q[1];
+		h q[2];
+		measure q[0];
+		measure q[2];""") # "000":0.25; "011": 0.25; "101": 0.25; "110":0.25
+
+	program_ghz_measure_xyy=Program("""h q[0];
+		h q[1];
+		x q[2];
+		cx q[1], q[2];
+		cx q[0], q[2];
+		h q[0];
+		h q[1];
+		h q[2];
+		h q[0];
+		sdg q[1];
+		sdg q[2];
+		measure q[0];
+		h q[1];
+		h q[2];
+		measure q[1];
+		measure q[2];""") # "000":0.25; "011": 0.25; "101": 0.25; "110":0.25
+
+	program_ghz_measure_xxx=Program("""h q[0];
+		h q[1];
+		x q[2];
+		cx q[1], q[2];
+		cx q[0], q[2];
+		h q[0];
+		h q[1];
+		h q[2];
+		h q[0];
+		h q[1];
+		h q[2];
+		measure q[0];
+		measure q[1];
+		measure q[2];""") #"001":0.25; "010": 0.25; "100": 0.25; "111":0.25
+
 
 #########################################################################################
 # All test code below
@@ -441,15 +598,13 @@ class TestMeasure(unittest.TestCase):
 		for i in range(100000):
 		 	measurements+=[State.measure(State.plus_state)]
 		result=(1.*sum(measurements))/len(measurements)
-		self.assertAlmostEqual(result.item(0),0.5,places=2)
-		self.assertAlmostEqual(result.item(1),0.5,places=2)
+		self.assertTrue(np.allclose(list(result.flat),np.array((0.5,0.5)),rtol=1e-2))
 	def test_measure_probs_minus(self):
 		measurements=[]
 		for i in range(100000):
 		 	measurements+=[State.measure(State.minus_state)]
 		result=(1.*sum(measurements))/len(measurements)
-		self.assertAlmostEqual(result.item(0),0.5,places=2)
-		self.assertAlmostEqual(result.item(1),0.5,places=2)
+		self.assertTrue(np.allclose(list(result.flat),np.array((0.5,0.5)),rtol=1e-2))
 	def test_collapse(self):
 		result=None
 		for i in range(100):
@@ -459,6 +614,13 @@ class TestMeasure(unittest.TestCase):
 				new_measure=State.measure(result)
 				self.assertTrue(np.allclose(result,new_measure))
 				result=new_measure
+	def test_measure_bell(self):
+		""" Tests the measurement of a 2 qubit entangled system"""	
+		measurements=[]
+		for i in range(100000):
+		 	measurements+=[State.measure(State.bell_state)]
+		result=(1.*sum(measurements))/len(measurements)
+		self.assertTrue(np.allclose(list(result.flat),np.array((0.5,0.0,0.0,0.5)),rtol=1e-2))
 
 class TestGetBloch(unittest.TestCase):
 	def setUp(self):
@@ -515,48 +677,6 @@ class TestTGate(unittest.TestCase):
 		# Checking norms
 		for state in [red_state,green_state,blue_state]:
 			self.assertAlmostEqual(np.linalg.norm(state),1.0)
-class TestBellState(unittest.TestCase):
-	def setUp(self):
-		print "In method", self._testMethodName
-	def test_bell_state(self):
-		# manually computing some of this (verified results to match IBM)
-		zz=State.bell_state
-		pr_zz=Probability.get_probabilities(zz)
-		corex_zz=Probability.get_correlated_expectation(zz)
-		self.assertTrue(np.allclose(pr_zz,(0.5,0,0,0.5)))
-		self.assertAlmostEqual(corex_zz,1)
-		
-		zw=State.change_to_w_basis(State.bell_state)
-		pr_zw=Probability.get_probabilities(zw)
-		corex_zw=Probability.get_correlated_expectation(zw)
-		self.assertTrue(np.allclose(pr_zw,(0.426777,0.073223,0.073223,0.426777)))
-		self.assertAlmostEqual(corex_zw,1/sqrt(2))
-
-		zv=State.change_to_v_basis(State.bell_state)
-		pr_zv=Probability.get_probabilities(zv)
-		corex_zv=Probability.get_correlated_expectation(zv)
-		self.assertTrue(np.allclose(pr_zv,(0.426777,0.073223,0.073223,0.426777)))
-		self.assertAlmostEqual(corex_zv,1/sqrt(2))
-
-		xw=State.change_to_w_basis(State.change_to_x_basis(State.bell_state))
-		pr_xw=Probability.get_probabilities(xw)
-		corex_xw=Probability.get_correlated_expectation(xw) 
-		self.assertTrue(np.allclose(pr_xw,(0.426777,0.073223,0.073223,0.426777)))
-		self.assertAlmostEqual(corex_xw,1/sqrt(2))
-
-		xv=State.change_to_v_basis(State.change_to_x_basis(State.bell_state))
-		pr_xv=Probability.get_probabilities(xv)
-		corex_xv=Probability.get_correlated_expectation(xv)
-		self.assertTrue(np.allclose(pr_xv,(0.073223,0.426777,0.426777,0.073223)))
-		self.assertAlmostEqual(corex_xv,-1/sqrt(2))
-		# Why is |C| = |<AB>| + |-<AB'>| + |<A'B>| + |<A'B'>|; instead of |<AB> + -<AB'> + <A'B> + <A'B'>|? Otherwise this result doesn't work out to be 2*sqrt(2)
-		abs_chsh_c = abs(corex_zw) + abs(corex_zv) + abs(corex_xw) + abs(-corex_xv) 
-		self.assertAlmostEqual(abs_chsh_c,2*sqrt(2))
-
-# class TestGHZState(unittest.TestCase):
-# 	def test_ghz_state(self):
-# 		pass
-
 
 class TestMultiQubitStates(unittest.TestCase):
 	def setUp(self):
@@ -780,38 +900,24 @@ class TestQuantumComputer(unittest.TestCase):
 		self.assertEqual(State.string_from_state(self.qc.qubits.get_qubit_named("q4").state),'0')
 
 
-	def test_apply_two_qubit_gate_target(self):
+	def test_apply_two_qubit_gate_CNOT_target(self):
 		self.assertTrue(self.qc.qubit_states_equal("q0",State.zero_state))
 		self.assertTrue(self.qc.qubit_states_equal("q1",State.zero_state))
-		self.qc.apply_two_qubit_gate(Gate.CNOT,"q0","q1")
+		self.qc.apply_two_qubit_gate_CNOT("q0","q1")
 		self.assertTrue(self.qc.qubit_states_equal("q0",State.zero_state))
 		self.assertTrue(self.qc.qubit_states_equal("q1",State.zero_state))
 		self.qc.apply_gate(Gate.X,"q0")
-		self.qc.apply_two_qubit_gate(Gate.CNOT,"q0","q1")
+		self.qc.apply_two_qubit_gate_CNOT("q0","q1")
 		self.assertTrue(self.qc.qubit_states_equal("q0",State.one_state))
 		self.assertTrue(self.qc.qubit_states_equal("q1",State.one_state))
-		self.qc.apply_two_qubit_gate(Gate.CNOT,"q0","q1")
+		self.qc.apply_two_qubit_gate_CNOT("q0","q1")
 		self.assertTrue(self.qc.qubit_states_equal("q0",State.one_state))
 		self.assertTrue(self.qc.qubit_states_equal("q1",State.zero_state))
 
 	def test_execute_bluestate(self):
 		"""Tests h,t,s,and bloch syntax on one qubit"""
 		# This is a program to generate the 'blue state' in IBM's exercise
-		program_blue_state="""h q[1];
-			t q[1];
-			h q[1];
-			t q[1];
-			h q[1];
-			t q[1];
-			s q[1];
-			h q[1];
-			t q[1];
-			h q[1];
-			t q[1];
-			s q[1];
-			h q[1];
-			bloch q[1];"""
-		self.qc.execute(program_blue_state)
+		self.qc.execute(Programs.program_blue_state.code)
 		# check if we are in the blue state
 		blue_state=Gate.H*Gate.S*Gate.T*Gate.H*Gate.T*Gate.H*Gate.S*Gate.T*Gate.H*Gate.T*Gate.H*Gate.T*Gate.H*State.zero_state
 		self.assertTrue(self.qc.bloch_coords_equal("q1",State.get_bloch(blue_state)))
@@ -821,19 +927,7 @@ class TestQuantumComputer(unittest.TestCase):
 			self.assertTrue(self.qc.qubit_states_equal(unchanged_state,State.zero_state))
 	def test_execute_X_Y_Z_Measure_Id_Sdag_Tdag(self):
 		"""Tests z,y,measure,id,sdag,tdag syntax on all 5 qubits"""
-		program_test_many="""sdg q[0];
-			x q[1];
-			x q[2];
-			id q[3];
-			z q[4];
-			tdg q[0];
-			y q[4];
-			measure q[0];
-			measure q[1];
-			measure q[2];
-			measure q[3];
-			measure q[4];"""
-		self.qc.execute(program_test_many)
+		self.qc.execute(Programs.program_test_XYZMeasureIdSdagTdag.code)
 		# result should be 01101
 		self.assertTrue(self.qc.qubit_states_equal("q0",State.zero_state))
 		self.assertTrue(self.qc.qubit_states_equal("q1",State.one_state))
@@ -843,9 +937,7 @@ class TestQuantumComputer(unittest.TestCase):
 
 	def test_execute_cnot(self):
 		"""Tests cnot"""
-		program_test_cnot="""x q[1];
-			cx q[1], q[2];"""
-		self.qc.execute(program_test_cnot)
+		self.qc.execute(Programs.program_test_cnot.code)
 		# result should be 01100
 		self.assertTrue(self.qc.qubit_states_equal("q0",State.zero_state))
 		self.assertTrue(self.qc.qubit_states_equal("q1",State.one_state))
@@ -856,20 +948,7 @@ class TestQuantumComputer(unittest.TestCase):
 
 	def test_execute_many(self):
 		"""Tests z,y,cnot,measure,id,sdag,tdag syntax on all 5 qubits"""
-		program_test_many="""sdg q[0];
-			x q[1];
-			x q[2];
-			id q[3];
-			z q[4];
-			tdg q[0];
-			cx q[1], q[2];
-			y q[4];
-			measure q[0];
-			measure q[1];
-			measure q[2];
-			measure q[3];
-			measure q[4];"""
-		self.qc.execute(program_test_many)
+		self.qc.execute(Programs.program_test_many.code)
 		# result should be 01001
 		self.assertTrue(self.qc.qubit_states_equal("q0",State.zero_state))
 		self.assertTrue(self.qc.qubit_states_equal("q1",State.one_state))
@@ -878,205 +957,36 @@ class TestQuantumComputer(unittest.TestCase):
 		self.assertTrue(self.qc.qubit_states_equal("q4",State.one_state))
 	# These tests will be enabled after entanglement is supported properly
 	# # Bell state experiments
-	def test_bellstate_measurements(self):
-		# This tests two qubit entanglement and measurement. Because I actually do measurement probabilistically
-		# it takes a while to evaluate enough times to get a good distribution!
-		program_zz="""h q[1];
-			cx q[1], q[2];
-			measure q[1];
-			measure q[2];""" # "00",0.5; "11",0.5 # <zz> = 2
-		measurements=[]
-		for i in range(100000):
+	def test_bellstate_programs(self):
+		# This tests two qubit entanglement.
+		for program,result_probs,result_cor in zip([Programs.program_zz,Programs.program_zw,Programs.program_zv,Programs.program_xw,Programs.program_xv],
+				[(0.5,0,0,0.5),(0.426777,0.073223,0.073223,0.426777),(0.426777,0.073223,0.073223,0.426777),(0.426777,0.073223,0.073223,0.426777),(0.073223,0.426777,0.426777,0.073223)],
+				[1,1/sqrt(2),1/sqrt(2),1/sqrt(2),-1/sqrt(2)]):
 			self.qc.reset()
-			self.qc.execute(program_zz)
-		 	measurements+=[self.qc.qubits.get_qubit_named("q1").state]
-		result=(1.*sum(measurements))/len(measurements)
-		self.assertAlmostEqual(result.item(0),0.5,places=2)
-		self.assertAlmostEqual(result.item(1),0.0,places=2)
-		self.assertAlmostEqual(result.item(2),0.0,places=2)
-		self.assertAlmostEqual(result.item(3),0.5,places=2)
-
-		program_zw="""h q[1];
-			cx q[1], q[2];
-			s q[2];
-			h q[2];
-			t q[2];
-			h q[2];
-			measure q[1];
-			measure q[2]""" # "00",0.426777; "01",0.073223; "10",0.073223; "11",0.426777 # <zw> = 1/sqrt(2)
-		measurements=[]
-		for i in range(100000):
-			self.qc.reset()
-			self.qc.execute(program_zw)
-		 	measurements+=[self.qc.qubits.get_qubit_named("q1").state]
-		result=(1.*sum(measurements))/len(measurements)
-		self.assertAlmostEqual(result.item(0),0.426777,places=2)
-		self.assertAlmostEqual(result.item(1),0.073223,places=2)
-		self.assertAlmostEqual(result.item(2),0.07322,places=2)
-		self.assertAlmostEqual(result.item(3),0.426777,places=2)
-
-		program_zv="""h q[1];
-			cx q[1], q[2];
-			s q[2];
-			h q[2];
-			tdg q[2];
-			h q[2];
-			measure q[1];
-			measure q[2];""" #"00",0.426777; "01",0.073223; "10",0.073223; "11",0.426777 # <zv> = 1/sqrt(2)
-		measurements=[]
-		for i in range(100000):
-			self.qc.reset()
-			self.qc.execute(program_zv)
-		 	measurements+=[self.qc.qubits.get_qubit_named("q1").state]
-		result=(1.*sum(measurements))/len(measurements)
-		self.assertAlmostEqual(result.item(0),0.426777,places=2)
-		self.assertAlmostEqual(result.item(1),0.073223,places=2)
-		self.assertAlmostEqual(result.item(2),0.07322,places=2)
-		self.assertAlmostEqual(result.item(3),0.426777,places=2)
-
-
-		program_xw="""h q[1];
-			cx q[1], q[2];
-			h q[1];
-			s q[2];
-			h q[2];
-			t q[2];
-			h q[2];
-			measure q[1];
-			measure q[2];""" # "00",0.426777; "01",0.073223; "10",0.073223; "11",0.426777 # <xw> = 
-		measurements=[]
-		for i in range(100000):
-			self.qc.reset()
-			self.qc.execute(program_xw)
-		 	measurements+=[self.qc.qubits.get_qubit_named("q1").state]
-		result=(1.*sum(measurements))/len(measurements)
-		self.assertAlmostEqual(result.item(0),0.426777,places=2)
-		self.assertAlmostEqual(result.item(1),0.073223,places=2)
-		self.assertAlmostEqual(result.item(2),0.07322,places=2)
-		self.assertAlmostEqual(result.item(3),0.426777,places=2)
-
-		program_xv="""h q[1];
-			cx q[1], q[2];
-			h q[1];
-			s q[2];
-			h q[2];
-			tdg q[2];
-			h q[2];
-			measure q[1];
-			measure q[2];""" #"00",0.073223; "01",0.426777; "10",0.426777; "11",0.073223; # <xv> =
-		measurements=[]
-		for i in range(100000):
-			self.qc.reset()
-			self.qc.execute(program_xv)
-		 	measurements+=[self.qc.qubits.get_qubit_named("q1").state]
-		result=(1.*sum(measurements))/len(measurements)
-		self.assertAlmostEqual(result.item(0),0.073223,places=2)
-		self.assertAlmostEqual(result.item(1),0.426777,places=2)
-		self.assertAlmostEqual(result.item(2),0.426777,places=2)
-		self.assertAlmostEqual(result.item(3),0.073223,places=2)
-
-	# May be useful for testing later:
-	# creates superposition of 00 and 01
-	# program_00_01_super="""sdg q[1];
-	# 	t q[1];
-	# 	t q[1];
-	# 	s q[1];
-	# 	h q[1];
-	# 	h q[0];
-	# 	h q[1];
-	# 	h q[0];
-	# 	h q[1];
-	# 	cx q[0], q[1];
-	# 	measure q[0];
-	# 	measure q[1];"""
+			self.qc.execute(program.code)
+			state_before_measure=self.qc.qubits.get_qubit_named("q1").noop
+			probs=Probability.get_probabilities(state_before_measure)
+			corex=Probability.get_correlated_expectation(state_before_measure)
+			self.assertTrue(np.allclose(probs,result_probs))
+			self.assertAlmostEqual(corex,result_cor)
 
 	# def test_ghz_measurements(self):
-	# 	#This tests three qubit entaglement and measurement
-	# 	# just creates a GHZ state
-	# 	program_ghz="""h q[0];
-	# 		h q[1];
-	# 		x q[2];
-	# 		cx q[1], q[2];
-	# 		cx q[0], q[2];
-	# 		h q[0];
-	# 		h q[1];
-	# 		h q[2];
-	# 		measure q[0];
-	# 		measure q[1];
-	# 		measure q[2];"""# "000":0.5; "111":0.5
-	# 	# now we measure it
-	# 	program_ghz_measure_yyx="""h q[0];
-	# 		h q[1];
-	# 		x q[2];
-	# 		cx q[1], q[2];
-	# 		cx q[0], q[2];
-	# 		h q[0];
-	# 		h q[1];
-	# 		h q[2];
-	# 		sdg q[0];
-	# 		sdg q[1];
-	# 		h q[2];
-	# 		h q[0];
-	# 		h q[1];
-	# 		measure q[2];
-	# 		measure q[0];
-	# 		measure q[1];""" # "000":0.25; "011": 0.25; "101": 0.25; "110":0.25
+		#This tests three qubit entaglement and measurement
+		# self.qc.reset()
+		# self.qc.execute(program_ghz)
+		# ghz=self.qc.qubits.get_qubit_named("q1").noop
+		# pr_ghz=Probability.get_probabilities(ghz)
+		# self.assertTrue(np.allclose(pr_zz,(0.5,0,0,0,0,0,0,0.5)))
+		# # 	# expectation of YYX should be n
+		# # 	# expectation of YXY whould be n
+		# # 	# expectation of XYY should be n
+		# # 	# expectation of XXX should be -n
+		# # 	# n ~ 3/4 TODO: calculate
+		# # 	# M=expectation_yyx*expectation_yxy*expectation_xyy*expectation_xxx=~-0.2
 
-	# 	program_ghz_measure_yxy="""h q[0];
-	# 		h q[1];
-	# 		x q[2];
-	# 		cx q[1], q[2];
-	# 		cx q[0], q[2];
-	# 		h q[0];
-	# 		h q[1];
-	# 		h q[2];
-	# 		sdg q[0];
-	# 		h q[1];
-	# 		sdg q[2];
-	# 		h q[0];
-	# 		measure q[1];
-	# 		h q[2];
-	# 		measure q[0];
-	# 		measure q[2];""" # "000":0.25; "011": 0.25; "101": 0.25; "110":0.25
-	# 	program_ghz_measure_xyy="""h q[0];
-	# 		h q[1];
-	# 		x q[2];
-	# 		cx q[1], q[2];
-	# 		cx q[0], q[2];
-	# 		h q[0];
-	# 		h q[1];
-	# 		h q[2];
-	# 		h q[0];
-	# 		sdg q[1];
-	# 		sdg q[2];
-	# 		measure q[0];
-	# 		h q[1];
-	# 		h q[2];
-	# 		measure q[1];
-	# 		measure q[2];""" # "000":0.25; "011": 0.25; "101": 0.25; "110":0.25
-
-	# 	program_ghz_measure_xxx="""h q[0];
-	# 		h q[1];
-	# 		x q[2];
-	# 		cx q[1], q[2];
-	# 		cx q[0], q[2];
-	# 		h q[0];
-	# 		h q[1];
-	# 		h q[2];
-	# 		h q[0];
-	# 		h q[1];
-	# 		h q[2];
-	# 		measure q[0];
-	# 		measure q[1];
-	# 		measure q[2];""" #"001":0.25; "010": 0.25; "100": 0.25; "111":0.25
-	# 	# expectation of YYX should be n
-	# 	# expectation of YXY whould be n
-	# 	# expectation of XYY should be n
-	# 	# expectation of XXX should be -n
-	# 	# n ~ 3/4 TODO: calculate
-	# 	# M=expectation_yyx*expectation_yxy*expectation_xyy*expectation_xxx=~-0.2
 	def tearDown(self):
 		self.qc=None
+
 
 
 if __name__ == '__main__':
