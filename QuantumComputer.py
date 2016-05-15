@@ -262,18 +262,16 @@ class Qubit(object):
 	def set_entangled(self,entangled):
 		self._entangled=entangled
 		for qb in self._entangled:
-			if qb!=self:
-				qb._entangled=self._entangled
-
+			qb._state=self._state
+			qb._entangled=self._entangled
 	def get_state(self):
 		return self._state
 	def set_state(self,state):
 		self._state=state
 		for qb in self._entangled:
-			if qb!=self:
-				qb._state=state
-				qb._entangled=self._entangled
-				qb._noop=self._noop
+			qb._state=state
+			qb._entangled=self._entangled
+			qb._noop=self._noop
 
 	def get_noop(self):
 		return self._noop
@@ -281,17 +279,16 @@ class Qubit(object):
 	def set_noop(self,noop):
 		self._noop=noop
 		for qb in self._entangled:
-			if qb!=self:
-				qb._noop=noop
+			qb._noop=noop
 
 	def is_entangled(self):
 		return len(self._entangled)>1
 	def is_entangled_with(self,qubit):
-		return [qubit in self._entangled]
+		return qubit in self._entangled
 
 	def get_indices(self,target_qubit):
 		if not self.is_entangled_with(target_qubit):
-			search=self._entangled+target_qubit._entangled
+			search=self._entangled+target_qubit.get_entangled()
 		else:
 			search=self._entangled
 		return search.index(self),search.index(target_qubit)
@@ -319,10 +316,9 @@ class QubitCollection(object):
 
 
 	def entangle_qubits(self,qubit,qubit_to_entangle):
+		new_entangle=qubit.get_entangled()+qubit_to_entangle.get_entangled()
 		self._remove_qubit_named(qubit_to_entangle.name)
-		qubit.set_entangled(qubit.get_entangled()+qubit_to_entangle.get_entangled())
-		qubit.set_state(qubit.get_state())
-
+		qubit.set_entangled(new_entangle)
 	def _remove_qubit_named(self,name):
 		self.qubits=filter(lambda qb: qb.name!=name,self.qubits)
 
@@ -415,21 +411,22 @@ class QuantumComputer(object):
 				self.qubits.entangle_qubits(first_qubit,second_qubit)
 				first_qubit.set_state(new_state)
 		else:
-			# We are ready to do the operation
-			control_qubit_idx,target_qubit_idx=first_qubit.get_indices(second_qubit)
+			if not first_qubit.is_entangled_with(second_qubit):
+				# Entangle the state
+				combined_state=np.kron(first_qubit.get_state(),second_qubit.get_state())
+				self.qubits.entangle_qubits(first_qubit,second_qubit)
+			else:
+				# We are ready to do the operation
+				combined_state=first_qubit.get_state()
 			# Select gate based on indices
+			control_qubit_idx,target_qubit_idx=first_qubit.get_indices(second_qubit)
 			# Time for more meta programming!
 			try:
 				exec 'gate=Gate.CNOT3_%d%d' %(control_qubit_idx,target_qubit_idx) 
 			except:
 				raise Exception("Unrecognized combination of number of qubits, CNOT not supported for > 3 entangled qubits currently")
-			if not first_qubit.is_entangled_with(second_qubit):
-				# Entangle the state
-				self.qubits.entangle_qubits(first_qubit,second_qubit)
-				first_qubit.set_state(gate*np.kron(first_qubit.get_state(),second_qubit.get_state()))
-			else:
-				first_qubit.set_state(gate*first_qubit.get_state())
-	
+			first_qubit.set_state(gate*combined_state)
+
 				
 
 
