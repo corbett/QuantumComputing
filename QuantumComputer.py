@@ -299,13 +299,13 @@ class Qubit(object):
 
 class QubitCollection(object):
 	def __init__(self,qubits):
-		self.qubits=qubits
-		for idx,qb in enumerate(self.qubits):
+		self._qubits=qubits
+		for idx,qb in enumerate(self._qubits):
 			qb.idx = idx
 		self.num_qubits=len(qubits)
 
 	def get_qubit_named(self,name):
-		for qb in self.qubits:
+		for qb in self._qubits:
 			if qb.name == name:
 				return qb
 			else:
@@ -314,28 +314,44 @@ class QubitCollection(object):
 						return entqb
 		raise Exception("qubit %s not found" % name)
 
+	def get_qubits(self):
+		return self._qubits
 
 	def entangle_qubits(self,qubit,qubit_to_entangle):
 		new_entangle=qubit.get_entangled()+qubit_to_entangle.get_entangled()
 		self._remove_qubit_named(qubit_to_entangle.name)
 		qubit.set_entangled(new_entangle)
 	def _remove_qubit_named(self,name):
-		self.qubits=filter(lambda qb: qb.name!=name,self.qubits)
+		self._qubits=filter(lambda qb: qb.name!=name,self._qubits)
 
 	def is_in_canonical_ordering(self):
 		return self.get_qubit_order()==range(self.num_qubits)
+	@staticmethod
+	def is_in_increasing_order(qb_list):
+		for a,b in zip(qb_list,qb_list[1:]):
+			if not a.idx<b.idx:
+				return False
+		return True
 
+	def get_entangled_qubit_order(self):
+		ordering=[]
+		for qb in self._qubits:
+			ent_order=[]
+			for ent in qb.get_entangled():
+				ent_order+=[ent]
+			ordering+=[ent_order]
+		return ordering
 
 	def get_qubit_order(self):
 		ordering=[]
-		for qb in self.qubits:
+		for qb in self._qubits:
 			for ent in qb.get_entangled():
 				ordering+=[ent.idx]
 		return ordering
 
 	def add_qubit(self,qubit):
 		qubit.idx=self.num_qubits
-		self.qubits+=[qubit]
+		self._qubits+=[qubit]
 		self.num_qubits+=1
 
 	@staticmethod 
@@ -357,20 +373,79 @@ class QuantumComputer(object):
 	def is_in_canonical_ordering(self):
 		return self.qubits.is_in_canonical_ordering()
 	def qubit_states_equal(self,name,state):
-		# TODO: this is the method that I need to implement
-		if self.is_in_canonical_ordering():
-			return np.allclose(self.qubits.get_qubit_named(name).get_state(),state)
+		get_states_for=[self.qubits.get_qubit_named(x.strip()) for x in name.split(',')]
+		if not QubitCollection.is_in_increasing_order(get_states_for):
+			raise Exception("at this time, requested qubits must be in increasing order")
+		entangled_qubit_order=self.qubits.get_entangled_qubit_order()
+		if (len(get_states_for)==1 and self.is_in_canonical_ordering()) or (get_states_for in entangled_qubit_order):
+			return np.allclose(get_states_for[0].get_state(),state)
 		else:
-			raise Exception("non canonical ordering measurements not yet implemented")
+			# # We know the idxs run range(5)
+			# # We know if the idxs are contiguous, increasing we are good
+			to_entangle=[]
+			for get_state_for_qb in get_states_for:
+				for eqb in entangled_qubit_order:
+					eqo=[q.idx for q in eqb]
+					# We know if the idxs are missing a number AND we want to find an idx that lies in there, we must entangle those states
+					if not get_state_for_qb.idx in eqo and get_state_for_qb.idx in range(min(eqo),max(eqo)+1):
+						# We'll have to entangle the two
+						qb1=self.qubits.get_qubit_named(eqo[0].name)
+						get_state_for_qb.set_state(np.kron(qb.get_state(),qb1.get_state()))
+						self.qubits.entangle_qubits(get_state_for_qb,qb1)
+						return self.qubit_states_equal(name,state)
+
+			# OK, if we reach here, we have all the entanglement we need, and we just need to sort the individual entangled states to match the output order
+			for qubit in self.qubits.get_qubits():
+				if not QubitCollection.is_in_increasing_order(qubit.get_entangled()): # all one apart
+					# We're not in order
+					# We need to assert that the full return can be comprised of concatenating states from beginning to end without extras
+					if not set(qubit.get_entangled())<=set(get_states_for):
+						raise Exception("With this entanglement setup we can't fully separate out just the qubits of iterest. Try measuring more bits")
+					# We only care if we actually want to return something from this state Put eqo in order then
+					# We want a sorting algorithm that easily maps to matrix operations, since we only have 5 elements max
+					# we'll use bubble sort
+					swapped=True
+					n=len(qubit.get_entangled())
+					while(swapped):
+						swapped=False
+						current_entangled=qubit.get_entangled()
+						for idx,(first_qubit,second_qubit) in enumerate(zip(current_entangled,current_entangled[1:])):
+							if first_qubit.idx > second_qubit.idx:
+								current_entangled[idx]=second_qubit
+								current_entangled[idx+1]=first_qubit
+								permute=np.eye(2**n,2**n)
+								all_combos=list(itertools.product([0,1],repeat=n))
+								for icombo,combo in enumerate(all_combos[:len(all_combos)/2]):
+									new_combo=list(combo)
+									new_combo[idx]=combo[idx+1]
+									new_combo[idx+1]=combo[idx]
+									new_combo=tuple(new_combo)
+									if combo!=new_combo:
+										inew_combo=all_combos.index(new_combo)
+										permute[np.array([icombo,inew_combo])]=permute[np.array([inew_combo,icombo])]
+								first_qubit.set_entangled(current_entangled)
+								first_qubit.set_state(permute*first_qubit.get_state())
+								swapped=True
+
+			# OK, if we reach here, everything is in order, and entangled states are either all of interest or none are of interest we just need to return it!
+			answer_state=None
+			for qb in self.qubits.get_qubits():
+				if set(qb.get_entangled()) <= set(get_states_for):
+					if answer_state==None:
+						answer_state=qb.get_state()
+					else:
+						answer_state=np.kron(answer_state,qb.get_state())
+			return np.allclose(answer_state,state)			
+
 	def bloch_coords_equal(self,name,coords):
 		if self.is_in_canonical_ordering():
 			return np.allclose(self.qubits.get_qubit_named(name).get_noop(),coords)
 		else:
-			raise Exception("non canonical ordering measurements not yet implemented")
+			raise Exception("non canonical ordering measurements not yet implemented for bloch sphere")
 
 	def apply_gate(self,gate,on_qubit_name):
 		on_qubit=self.qubits.get_qubit_named(on_qubit_name)
-		if on_qubit.get_noop():
+		if len(on_qubit.get_noop()) > 0:
 			raise Exception("This qubit has been measured previously, no more gates allowed")
 		if not on_qubit.is_entangled():
 			if on_qubit.get_num_qubits()!=1:
@@ -398,7 +473,7 @@ class QuantumComputer(object):
 		states."""
 		first_qubit=self.qubits.get_qubit_named(first_qubit_name)
 		second_qubit=self.qubits.get_qubit_named(second_qubit_name)
-		if first_qubit.get_noop() or second_qubit.get_noop():
+		if len(first_qubit.get_noop())>0 or len(second_qubit.get_noop())>0:
 			raise Exception("Control or target qubit has been measured previously, no more gates allowed")
 		if not first_qubit.is_entangled() and not second_qubit.is_entangled():
 			combined_state=np.kron(first_qubit.get_state(),second_qubit.get_state())
@@ -432,7 +507,8 @@ class QuantumComputer(object):
 
 	def bloch(self,qubit_name):
 		on_qubit=self.qubits.get_qubit_named(qubit_name)
-		on_qubit.set_noop(State.get_bloch(on_qubit.get_state()))
+		if len(on_qubit.get_noop())==0:
+			on_qubit.set_noop(State.get_bloch(on_qubit.get_state()))
 	def measure(self,qubit_name):
 		on_qubit=self.qubits.get_qubit_named(qubit_name)
 		if len(on_qubit.get_noop())==0:
@@ -1402,9 +1478,7 @@ class TestQuantumComputer(unittest.TestCase):
 				self.qc.qubits.entangle_qubits(q0,q2)
 				self.assertEqual(Qubit.num_qubits(q0.get_state()),3)
 				self.qc.apply_two_qubit_gate_CNOT(target,control)
-				self.assertTrue(self.qc.qubit_states_equal("q0",State.state_from_string('000')))
-				self.assertTrue(self.qc.qubit_states_equal("q1",State.state_from_string('000')))
-				self.assertTrue(self.qc.qubit_states_equal("q2",State.state_from_string('000')))
+				self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",State.state_from_string('000')))
 		self.qc.reset()
 		q0=self.qc.qubits.get_qubit_named("q0")
 		q1=self.qc.qubits.get_qubit_named("q1")
@@ -1413,35 +1487,35 @@ class TestQuantumComputer(unittest.TestCase):
 		self.qc.qubits.entangle_qubits(q0,q1)
 		self.qc.qubits.entangle_qubits(q0,q2)
 		self.qc.apply_two_qubit_gate_CNOT("q0","q1") # Before: 100 After: 110
-		self.assertTrue(self.qc.qubit_states_equal("q0",State.state_from_string('110')))
+		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",State.state_from_string('110')))
 		self.qc.apply_two_qubit_gate_CNOT("q1","q0") # Before: 110 After: 010
-		self.assertTrue(self.qc.qubit_states_equal("q0",State.state_from_string('010')))
+		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",State.state_from_string('010')))
 		self.qc.apply_two_qubit_gate_CNOT("q0","q1") # Before: 010 After: 010
-		self.assertTrue(self.qc.qubit_states_equal("q0",State.state_from_string('010')))
+		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",State.state_from_string('010')))
 		self.qc.apply_two_qubit_gate_CNOT("q2","q1") # Before: 010 After: 010
-		self.assertTrue(self.qc.qubit_states_equal("q0",State.state_from_string('010')))
+		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",State.state_from_string('010')))
 		self.qc.apply_two_qubit_gate_CNOT("q1","q2") # Before: 010 After: 011
-		self.assertTrue(self.qc.qubit_states_equal("q0",State.state_from_string('011')))
+		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",State.state_from_string('011')))
 		self.qc.apply_two_qubit_gate_CNOT("q2","q1") # Before: 011 After: 001
-		self.assertTrue(self.qc.qubit_states_equal("q0",State.state_from_string('001')))
+		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",State.state_from_string('001')))
 		self.qc.apply_two_qubit_gate_CNOT("q0","q1") # Before: 001 After: 001
-		self.assertTrue(self.qc.qubit_states_equal("q0",State.state_from_string('001')))
+		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",State.state_from_string('001')))
 		self.qc.apply_two_qubit_gate_CNOT("q1","q0") # Before: 001 After: 001
-		self.assertTrue(self.qc.qubit_states_equal("q0",State.state_from_string('001')))
+		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",State.state_from_string('001')))
 		self.qc.apply_two_qubit_gate_CNOT("q1","q2") # Before: 001 After: 001
-		self.assertTrue(self.qc.qubit_states_equal("q0",State.state_from_string('001')))
+		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",State.state_from_string('001')))
 		self.qc.apply_two_qubit_gate_CNOT("q0","q2") # Before: 001 After: 001
-		self.assertTrue(self.qc.qubit_states_equal("q0",State.state_from_string('001')))
+		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",State.state_from_string('001')))
 		self.qc.apply_two_qubit_gate_CNOT("q2","q1") # Before: 001 After: 011
-		self.assertTrue(self.qc.qubit_states_equal("q0",State.state_from_string('011')))
+		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",State.state_from_string('011')))
 		self.qc.apply_two_qubit_gate_CNOT("q2","q0") # Before: 011 After: 111
-		self.assertTrue(self.qc.qubit_states_equal("q0",State.state_from_string('111')))
+		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",State.state_from_string('111')))
 		self.qc.apply_two_qubit_gate_CNOT("q0","q2") # Before: 111 After: 110
-		self.assertTrue(self.qc.qubit_states_equal("q0",State.state_from_string('110')))
+		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",State.state_from_string('110')))
 		self.qc.apply_two_qubit_gate_CNOT("q2","q1") # Before: 110 After: 110
-		self.assertTrue(self.qc.qubit_states_equal("q0",State.state_from_string('110')))
+		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",State.state_from_string('110')))
 		self.qc.apply_two_qubit_gate_CNOT("q2","q0") # Before: 110 After: 110
-		self.assertTrue(self.qc.qubit_states_equal("q0",State.state_from_string('110')))
+		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",State.state_from_string('110')))
 
 	def test_apply_two_qubit_gate_CNOT_two_entangled_target(self):
 		# We'll put qubit0 in state |10> and qubit1 is in state |0>
@@ -1450,21 +1524,16 @@ class TestQuantumComputer(unittest.TestCase):
 		q0.set_state(State.state_from_string("10"))
 		self.qc.qubits.entangle_qubits(q0,q1)
 		self.qc.apply_two_qubit_gate_CNOT("q0","q2") # Before: 100 After: 101
-		self.assertTrue(self.qc.qubit_states_equal("q0",State.state_from_string('101')))
-		self.assertTrue(self.qc.qubit_states_equal("q1",State.state_from_string('101')))
-		self.assertTrue(self.qc.qubit_states_equal("q2",State.state_from_string('101')))
-
+		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",State.state_from_string('101')))
 		self.qc.reset()
 		q0=self.qc.qubits.get_qubit_named("q0")
 		q1=self.qc.qubits.get_qubit_named("q1")
 		q0.set_state(State.state_from_string("10"))
 		self.qc.qubits.entangle_qubits(q0,q1)
 		self.qc.apply_two_qubit_gate_CNOT("q2","q0") # Before: 100 After: 100
-		self.assertTrue(self.qc.qubit_states_equal("q0",State.state_from_string('100')))
-		self.assertTrue(self.qc.qubit_states_equal("q1",State.state_from_string('100')))
-		self.assertTrue(self.qc.qubit_states_equal("q2",State.state_from_string('100')))
+		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",State.state_from_string('100')))
 		self.qc.apply_two_qubit_gate_CNOT("q0","q1") # Before: 100 After: 110
-		self.assertTrue(self.qc.qubit_states_equal("q0",State.state_from_string('110')))
+		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",State.state_from_string('110')))
 
 
 		
@@ -1526,7 +1595,7 @@ class TestQuantumComputer(unittest.TestCase):
 			self.assertAlmostEqual(corex,result_cor)
 	#########################################################################################
 	# All test code below; Haven't enacted this as I'm still fleshing out the multi-qubit states
-	#########################################################################################
+	########################################################################################
 	# def test_ghz_measurements(self):
 	# 	for program in [Programs.program_ghz,Programs.program_ghz_measure_xxx,Programs.program_ghz_measure_xyy,Programs.program_ghz_measure_yxy,Programs.program_ghz_measure_yyx]:
 	# 		self.qc.reset()
@@ -1534,7 +1603,7 @@ class TestQuantumComputer(unittest.TestCase):
 	# 		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
 	# 		probs=Probability.get_probabilities(state_before_measure)
 	# 		self.assertTrue(np.allclose(probs,program.result_probability))
-	# # # n ~ 3/4 TODO: calculate
+	# # # # n ~ 3/4 TODO: calculate
 	# # # expectation of YYX should be n
 	# # # expectation of YXY whould be n
 	# # # expectation of XYY should be n
@@ -1544,7 +1613,7 @@ class TestQuantumComputer(unittest.TestCase):
 	# 	for program in Programs.all_multi_gate_tests:
 	# 		self.qc.reset()
 	# 		self.qc.execute(program.code)
-	# 		state_before_measure=self.qc.qubits.get_qubit_named("q1").noop
+	# 		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
 	# 		if not program.bloch_vals:
 	# 			probs=Probability.get_probabilities(state_before_measure)
 	# 			self.assertTrue(np.allclose(probs,program.result_probability))
@@ -1555,7 +1624,7 @@ class TestQuantumComputer(unittest.TestCase):
 	# 	for program in Programs.all_grover_tests:
 	# 		self.qc.reset()
 	# 		self.qc.execute(program.code)
-	# 		state_before_measure=self.qc.qubits.get_qubit_named("q1").noop
+	# 		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
 	# 		if not program.bloch_vals:
 	# 			probs=Probability.get_probabilities(state_before_measure)
 	# 			self.assertTrue(np.allclose(probs,program.result_probability))
@@ -1566,19 +1635,18 @@ class TestQuantumComputer(unittest.TestCase):
 	# 	for program in Programs.all_deutschjozsa_tests:
 	# 		self.qc.reset()
 	# 		self.qc.execute(program.code)
-	# 		state_before_measure=self.qc.qubits.get_qubit_named("q1").noop
+	# 		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
 	# 		if not program.bloch_vals:
 	# 			probs=Probability.get_probabilities(state_before_measure)
 	# 			self.assertTrue(np.allclose(probs,program.result_probability))
 	# 		else:
 	# 			# TODO: implement Bloch for entangled qubits and check if
 	# 			raise Exception("haven't implemented Bloch for more than one qubit yet")		
-
 	# def test_repetition_code(self):
 	# 	for program in Programs.all_repetition_code_tests:
 	# 		self.qc.reset()
 	# 		self.qc.execute(program.code)
-	# 		state_before_measure=self.qc.qubits.get_qubit_named("q1").noop
+	# 		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
 	# 		if not program.bloch_vals:
 	# 			probs=Probability.get_probabilities(state_before_measure)
 	# 			self.assertTrue(np.allclose(probs,program.result_probability))
@@ -1589,7 +1657,7 @@ class TestQuantumComputer(unittest.TestCase):
 	# 	for program in Programs.all_plaquette_programs:
 	# 		self.qc.reset()
 	# 		self.qc.execute(program.code)
-	# 		state_before_measure=self.qc.qubits.get_qubit_named("q1").noop
+	# 		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
 	# 		if not program.bloch_vals:
 	# 			probs=Probability.get_probabilities(state_before_measure)
 	# 			self.assertTrue(np.allclose(probs,program.result_probability))
