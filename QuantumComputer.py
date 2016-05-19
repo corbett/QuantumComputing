@@ -37,15 +37,15 @@ class Gate(object):
 	## Two qubit gates
 	# CNOT Gate (control is qubit 0, target qubit 1), this is the default CNOT gate
 	# TODO: can I break this down as a tensor product of 2x2 gates? 
-	CNOT=np.matrix('1 0 0 0; 0 1 0 0; 0 0 0 1; 0 0 1 0')
+	CNOT2_01=np.matrix('1 0 0 0; 0 1 0 0; 0 0 0 1; 0 0 1 0')
 	# Later may want to remove these, but currently codifying knowledge
 	# control is qubit 1 target is qubit 0 
-	CNOT10=np.kron(H,H)*CNOT*np.kron(H,H) #=np.matrix('1 0 0 0; 0 0 0 1; 0 0 1 0; 0 1 0 0') 
+	CNOT2_10=np.kron(H,H)*CNOT2_01*np.kron(H,H) #=np.matrix('1 0 0 0; 0 0 0 1; 0 0 1 0; 0 1 0 0') 
 	# operates on 2/3 qubits, control is first subscript, target second
-	CNOT3_01=np.kron(CNOT,eye)
-	CNOT3_10=np.kron(CNOT10,eye)
-	CNOT3_12=np.kron(eye,CNOT)
-	CNOT3_21=np.kron(eye,CNOT10)
+	CNOT3_01=np.kron(CNOT2_01,eye)
+	CNOT3_10=np.kron(CNOT2_10,eye)
+	CNOT3_12=np.kron(eye,CNOT2_01)
+	CNOT3_21=np.kron(eye,CNOT2_10)
 	# TODO: can I break this down as a tensor product?
 	CNOT3_02=np.matrix('1 0 0 0 0 0 0 0; 0 1 0 0 0 0 0 0; 0 0 1 0 0 0 0 0; 0 0 0 1 0 0 0 0; 0 0 0 0 0 1 0 0; 0 0 0 0 1 0 0 0; 0 0 0 0 0 0 0 1; 0 0 0 0 0 0 1 0')
 	CNOT3_20=np.matrix('1 0 0 0 0 0 0 0; 0 0 0 0 0 1 0 0; 0 0 1 0 0 0 0 0; 0 0 0 0 0 0 0 1; 0 0 0 0 1 0 0 0; 0 1 0 0 0 0 0 0; 0 0 0 0 0 0 1 0; 0 0 0 1 0 0 0 0')
@@ -153,21 +153,29 @@ class State(object):
 
 		Throws exception if not a separable state"""
 		n_entangled=Qubit.num_qubits(qubit_state)
-		if list(qubit_state.flat).count(1)!=1:
+		if list(qubit_state.flat).count(1)==1:
+			separated_state=[]
+			idx_state=list(qubit_state.flat).index(1)
+			add_factor=0
+			size=qubit_state.shape[0]
+			while(len(separated_state)<n_entangled):
+				size=size/2
+				if idx_state<(add_factor+size):
+					separated_state+=[State.zero_state]
+					add_factor+=0
+				else:
+					separated_state+=[State.one_state]
+					add_factor+=size
+			return separated_state
+		else:
+			# Try a few naive separations before giving up
+			cardinal_states=[State.zero_state,State.one_state,State.plus_state,State.minus_state,State.plusi_state,State.minusi_state]
+			for separated_state in itertools.product(cardinal_states, repeat=n_entangled):
+				candidate_state=reduce(lambda x,y:np.kron(x,y),separated_state)
+				if np.allclose(candidate_state,qubit_state):
+					return separated_state
+			# TODO: more general separation methods
 			raise StateNotSeparableException("TODO: Entangled qubits not represented yet in quantum computer implementation. Can currently do manual calculations; see TestBellState for Examples")
-		separated_state=[]
-		idx_state=list(qubit_state.flat).index(1)
-		add_factor=0
-		size=qubit_state.shape[0]
-		while(len(separated_state)<n_entangled):
-			size=size/2
-			if idx_state<(add_factor+size):
-				separated_state+=[State.zero_state]
-				add_factor+=0
-			else:
-				separated_state+=[State.one_state]
-				add_factor+=size
-		return separated_state
 
 	@staticmethod
 	def measure(state):
@@ -426,7 +434,6 @@ class QuantumComputer(object):
 								first_qubit.set_entangled(current_entangled)
 								first_qubit.set_state(permute*first_qubit.get_state())
 								swapped=True
-
 			# OK, if we reach here, everything is in order, and entangled states are either all of interest or none are of interest we just need to return it!
 			answer_state=None
 			for qb in self.qubits.get_qubits():
@@ -438,15 +445,22 @@ class QuantumComputer(object):
 			return np.allclose(answer_state,state)			
 
 	def bloch_coords_equal(self,name,coords):
-		if self.is_in_canonical_ordering():
-			return np.allclose(self.qubits.get_qubit_named(name).get_noop(),coords)
+		on_qubit=self.qubits.get_qubit_named(name)
+		if self.is_in_canonical_ordering() and not on_qubit.is_entangled():
+			return np.allclose(on_qubit.get_noop(),coords,atol=1e-3)
 		else:
-			raise Exception("non canonical ordering measurements not yet implemented for bloch sphere")
+			try:
+				separated_qubit=State.separate_state(on_qubit.get_state())
+				on_qubit_idx=(on_qubit.get_entangled()).index(on_qubit)
+				return np.allclose(State.get_bloch(separated_qubit[on_qubit_idx]),coords,atol=1e-3)
+			except StateNotSeparableException, e:
+				raise Exception("Entangled measurements that cannot be separatednot yet implemented for bloch sphere")
 
 	def apply_gate(self,gate,on_qubit_name):
 		on_qubit=self.qubits.get_qubit_named(on_qubit_name)
 		if len(on_qubit.get_noop()) > 0:
-			raise Exception("This qubit has been measured previously, no more gates allowed")
+			print "NOTE this qubit has been measured previously"
+			#raise Exception("This qubit has been measured previously, no more gates allowed")
 		if not on_qubit.is_entangled():
 			if on_qubit.get_num_qubits()!=1:
 				raise Exception("This qubit is not marked as entangled but it has an entangled state")
@@ -479,7 +493,7 @@ class QuantumComputer(object):
 			combined_state=np.kron(first_qubit.get_state(),second_qubit.get_state())
 			if first_qubit.get_num_qubits()!=1 or second_qubit.get_num_qubits()!=1:
 				raise Exception("Both qubits are marked as not entangled but one or the other has an entangled state")
-			new_state=Gate.CNOT*combined_state
+			new_state=Gate.CNOT2_01*combined_state
 			if State.is_separable(new_state):
 				second_qubit.set_state(State.get_second_qubit(new_state))
 			else:
@@ -493,11 +507,12 @@ class QuantumComputer(object):
 			else:
 				# We are ready to do the operation
 				combined_state=first_qubit.get_state()
+			# Time for more meta programming!
 			# Select gate based on indices
 			control_qubit_idx,target_qubit_idx=first_qubit.get_indices(second_qubit)
-			# Time for more meta programming!
+			gate_size=Qubit.num_qubits(combined_state)
 			try:
-				exec 'gate=Gate.CNOT3_%d%d' %(control_qubit_idx,target_qubit_idx) 
+				exec 'gate=Gate.CNOT%d_%d%d' %(gate_size,control_qubit_idx,target_qubit_idx) 
 			except:
 				raise Exception("Unrecognized combination of number of qubits, CNOT not supported for > 3 entangled qubits currently")
 			first_qubit.set_state(gate*combined_state)
@@ -508,7 +523,11 @@ class QuantumComputer(object):
 	def bloch(self,qubit_name):
 		on_qubit=self.qubits.get_qubit_named(qubit_name)
 		if len(on_qubit.get_noop())==0:
-			on_qubit.set_noop(State.get_bloch(on_qubit.get_state()))
+			if not on_qubit.is_entangled():
+				on_qubit.set_noop(State.get_bloch(on_qubit.get_state()))
+			else:
+				on_qubit.set_noop([1])
+
 	def measure(self,qubit_name):
 		on_qubit=self.qubits.get_qubit_named(qubit_name)
 		if len(on_qubit.get_noop())==0:
@@ -750,7 +769,7 @@ class Programs(object):
 		h q[1];
 		h q[2];
 		measure q[1];
-		measure q[2];""",result_probability=[0.0,0.0,0.0,1.0])# "11": 1.0
+		measure q[2];""",result_probability=[(0.0,1.0),(0.0,1.0)])# "11": 1.0
 
 	program_swap=Program("""x q[2];
 		cx q[1], q[2];
@@ -761,7 +780,7 @@ class Programs(object):
 		h q[2];
 		cx q[1], q[2];
 		measure q[1];
-		measure q[2];""",result_probability=[0.0,1.0,0.0,0.0]) # "01": 1.0
+		measure q[2];""",result_probability=[(0.0,1.0),(1.0,0.0)]) # "10": 1.0
 
 	program_swap_q0_q1=Program("""h q[0];
 		cx q[0], q[2];
@@ -831,7 +850,40 @@ class Programs(object):
 		h q[1];
 		t q[1];
 		h q[1];
-		bloch q[1];""",bloch_vals=((1,0,0),(0.927, 0.375, 0.021), (0.707, 0.707, 0.000),(0.000, 1.000, 0.000), (-1.000, 0.000, 0.000))) #Bloch coords q0: (1.000, 0.000, 0.000) q1: (0.927, 0.375, 0.021) q2: (0.707, 0.707, 0.000) q3: (0.000, 1.000, 0.000) q4: (-1.000, 0.000, 0.000)
+		bloch q[1];""",bloch_vals=((1,0,0),(0.927, 0.375, 0.021), (0.707, 0.707, 0.000),(0.000, 1.000, 0.000), (-1.000, 0.000, 0.000))) #Bloch coords q0: (1.000, 0.000, 0.000) q1: (0.927, 0.375, 0.021) q2: (0.707, 0.707, 0.000) q3: (0.000, 1.000, 0.000) q4: (-1.000, 0.000, 0.000) # checks out when we manually get_bloch
+		# 	Shots,Value,Probability,Qubits Measured
+		# 1,"00000",0.0319202
+		# 1,"00001",0.0319202
+		# 1,"00010",0.0319202
+		# 1,"00011",0.0319202
+		# 1,"00100",0.0319202
+		# 1,"00101",0.0319202
+		# 1,"00110",0.0319202
+		# 1,"00111",0.0319202
+		# 1,"01000",0.0305798
+		# 1,"01001",0.0305798
+		# 1,"01010",0.0305798
+		# 1,"01011",0.0305798
+		# 1,"01100",0.0305798
+		# 1,"01101",0.0305798
+		# 1,"01110",0.0305798
+		# 1,"01111",0.0305798
+		# 1,"10000",0.0319202
+		# 1,"10001",0.0319202
+		# 1,"10010",0.0319202
+		# 1,"10011",0.0319202
+		# 1,"10100",0.0319202
+		# 1,"10101",0.0319202
+		# 1,"10110",0.0319202
+		# 1,"10111",0.0319202
+		# 1,"11000",0.0305798
+		# 1,"11001",0.0305798
+		# 1,"11010",0.0305798
+		# 1,"11011",0.0305798
+		# 1,"11100",0.0305798
+		# 1,"11101",0.0305798
+		# 1,"11110",0.0305798
+		# 1,"11111",0.0305798
 	program_toffoli_state=Program("""h q[0];
 		h q[1];
 		h q[2];
@@ -993,7 +1045,6 @@ class Programs(object):
 		measure q[0];
 		measure q[1];
 		measure q[2];""",result_probability=(1.0,0,0,0,0,0,0,0))
-	all_deutschjozsa_tests=[program_deutschjozsa_n3,program_deutschjozsa_constant_n3]
 	
 	# IBM Section V, page 2 Quantum Repetition Code
 	program_encoder_into_bitflip_code=Program("""h q[2];
@@ -1075,7 +1126,6 @@ class Programs(object):
 		measure q[0];
 		measure q[1];
 		measure q[3];""",result_probability=(0.852,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.146,0,0,0,0,0)) # 00000: 0.854; 11010: 0.146
-	all_repetition_code_tests=[program_encoder_into_bitflip_code_parity_checks,program_encoder_and_decoder_tomography,program_encoder_into_bitflip_code]
 	# IBM Section V, page 3 Stabilizer measurements
 	program_plaquette_z0000=Program("""id q[0];
 		id q[1];
@@ -1113,21 +1163,139 @@ class Programs(object):
 		cx q[3], q[2];
 		cx q[1], q[2];
 		measure q[2];""",result_probability=(1.0,0))
-	program_plaquette_z0100=Program(""" """,result_probability=(0,0))
-	program_plaquette_z0101=Program(""" """,result_probability=(0,0))
-	program_plaquette_z0110=Program(""" """,result_probability=(0,0))
-	program_plaquette_z0111=Program(""" """,result_probability=(0,0))
-	program_plaquette_z1000=Program(""" """,result_probability=(0,0))
-	program_plaquette_z1001=Program(""" """,result_probability=(0,0))
-	program_plaquette_z1010=Program(""" """,result_probability=(0,0))
-	program_plaquette_z1011=Program(""" """,result_probability=(0,0))
-	program_plaquette_z1100=Program(""" """,result_probability=(0,0))
-	program_plaquette_z1101=Program(""" """,result_probability=(0,0))
-	program_plaquette_z1110=Program(""" """,result_probability=(0,0))
-	program_plaquette_z1111=Program(""" """,result_probability=(0,0))
-	program_plaquette_zXplusminusplusminus=Program(""" """,result_probability=(0,0))
+	program_plaquette_z0100=Program("""id q[0];
+		x q[1];
+		id q[3];
+		id q[4];
+		cx q[4], q[2];
+		cx q[0], q[2];
+		cx q[3], q[2];
+		cx q[1], q[2];
+		measure q[2];""",result_probability=(0,1.0))
+	program_plaquette_z0101=Program("""id q[0];
+		x q[1];
+		id q[3];
+		x q[4];
+		cx q[4], q[2];
+		cx q[0], q[2];
+		cx q[3], q[2];
+		cx q[1], q[2];
+		measure q[2];""",result_probability=(1.0,0))
+	program_plaquette_z0110=Program("""id q[0];
+		x q[1];
+		x q[3];
+		id q[4];
+		cx q[4], q[2];
+		cx q[0], q[2];
+		cx q[3], q[2];
+		cx q[1], q[2];
+		measure q[2];""",result_probability=(1.0,0))
+	program_plaquette_z0111=Program("""id q[0];
+		x q[1];
+		x q[3];
+		x q[4];
+		cx q[4], q[2];
+		cx q[0], q[2];
+		cx q[3], q[2];
+		cx q[1], q[2];
+		measure q[2];""",result_probability=(0,1.0))
+	program_plaquette_z1000=Program("""x q[0];
+		id q[1];
+		id q[3];
+		id q[4];
+		cx q[4], q[2];
+		cx q[0], q[2];
+		cx q[3], q[2];
+		cx q[1], q[2];
+		measure q[2];""",result_probability=(0,1.0))
+	program_plaquette_z1001=Program("""x q[0];
+		id q[1];
+		id q[3];
+		x q[4];
+		cx q[4], q[2];
+		cx q[0], q[2];
+		cx q[3], q[2];
+		cx q[1], q[2];
+		measure q[2];""",result_probability=(1.0,0))
+	program_plaquette_z1010=Program("""x q[0];
+		id q[1];
+		x q[3];
+		id q[4];
+		cx q[4], q[2];
+		cx q[0], q[2];
+		cx q[3], q[2];
+		cx q[1], q[2];
+		measure q[2];""",result_probability=(1.0,0))
+	program_plaquette_z1011=Program("""x q[0];
+		id q[1];
+		x q[3];
+		x q[4];
+		cx q[4], q[2];
+		cx q[0], q[2];
+		cx q[3], q[2];
+		cx q[1], q[2];
+		measure q[2];""",result_probability=(0,1.0))
+	program_plaquette_z1100=Program("""x q[0];
+		x q[1];
+		id q[3];
+		id q[4];
+		cx q[4], q[2];
+		cx q[0], q[2];
+		cx q[3], q[2];
+		cx q[1], q[2];
+		measure q[2];""",result_probability=(1.0,0))
+	program_plaquette_z1101=Program("""x q[0];
+		x q[1];
+		id q[3];
+		x q[4];
+		cx q[4], q[2];
+		cx q[0], q[2];
+		cx q[3], q[2];
+		cx q[1], q[2];
+		measure q[2];""",result_probability=(0,1.0))
+	program_plaquette_z1110=Program("""x q[0];
+		x q[1];
+		x q[3];
+		id q[4];
+		cx q[4], q[2];
+		cx q[0], q[2];
+		cx q[3], q[2];
+		cx q[1], q[2];
+		measure q[2];""",result_probability=(0,1.0))
+	program_plaquette_z1111=Program("""x q[0];
+		x q[1];
+		x q[3];
+		x q[4];
+		cx q[4], q[2];
+		cx q[0], q[2];
+		cx q[3], q[2];
+		cx q[1], q[2];
+		measure q[2];""",result_probability=(1.0,0))
+	program_plaquette_zXplusminusplusminus=Program("""h q[0];
+		h q[1];
+		h q[3];
+		h q[4];
+		z q[1];
+		z q[4];
+		id q[0];
+		id q[1];
+		id q[3];
+		id q[4];
+		h q[0];
+		h q[1];
+		h q[3];
+		h q[4];
+		cx q[4], q[2];
+		cx q[3], q[2];
+		cx q[0], q[2];
+		cx q[1], q[2];
+		h q[0];
+		h q[1];
+		measure q[2];
+		h q[3];
+		h q[4];""",result_probability=(1.0,0))
 	# Convenience for testing
- 	all_plaquette_programs=[program_plaquette_z0000,program_plaquette_z0001,program_plaquette_z0010,program_plaquette_z0011,program_plaquette_z0100,program_plaquette_z0101,program_plaquette_z0110,program_plaquette_z0111,program_plaquette_z1000,program_plaquette_z1001,program_plaquette_z1010,program_plaquette_z1011,program_plaquette_z1100,program_plaquette_z1101,program_plaquette_z1110,program_plaquette_z1111,program_plaquette_zXplusminusplusminus]
+ 	all_normal_plaquette_programs=[program_plaquette_z0000,program_plaquette_z0001,program_plaquette_z0010,program_plaquette_z0011,program_plaquette_z0100,program_plaquette_z0101,program_plaquette_z0110,program_plaquette_z0111,program_plaquette_z1000,program_plaquette_z1001,program_plaquette_z1010,program_plaquette_z1011,program_plaquette_z1100,program_plaquette_z1101,program_plaquette_z1110,program_plaquette_z1111]
 
 #########################################################################################
 # All test code below
@@ -1215,10 +1383,10 @@ class TestCNOTGate(unittest.TestCase):
 	def setUp(self):
 		print "In method", self._testMethodName
 	def test_CNOT(self):
-		self.assertTrue(np.allclose(Gate.CNOT*State.state_from_string('00'),State.state_from_string('00')))
-		self.assertTrue(np.allclose(Gate.CNOT*State.state_from_string('01'),State.state_from_string('01')))
-		self.assertTrue(np.allclose(Gate.CNOT*State.state_from_string('10'),State.state_from_string('11')))
-		self.assertTrue(np.allclose(Gate.CNOT*State.state_from_string('11'),State.state_from_string('10')))
+		self.assertTrue(np.allclose(Gate.CNOT2_01*State.state_from_string('00'),State.state_from_string('00')))
+		self.assertTrue(np.allclose(Gate.CNOT2_01*State.state_from_string('01'),State.state_from_string('01')))
+		self.assertTrue(np.allclose(Gate.CNOT2_01*State.state_from_string('10'),State.state_from_string('11')))
+		self.assertTrue(np.allclose(Gate.CNOT2_01*State.state_from_string('11'),State.state_from_string('10')))
 
 class TestTGate(unittest.TestCase):
 	def setUp(self):
@@ -1535,9 +1703,6 @@ class TestQuantumComputer(unittest.TestCase):
 		self.qc.apply_two_qubit_gate_CNOT("q0","q1") # Before: 100 After: 110
 		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",State.state_from_string('110')))
 
-
-		
-
 	def test_execute_bluestate(self):
 		"""Tests h,t,s,and bloch syntax on one qubit"""
 		# This is a program to generate the 'blue state' in IBM's exercise
@@ -1593,84 +1758,195 @@ class TestQuantumComputer(unittest.TestCase):
 			corex=Probability.get_correlated_expectation(state_before_measure)
 			self.assertTrue(np.allclose(probs,result_probs))
 			self.assertAlmostEqual(corex,result_cor)
-	#########################################################################################
-	# All test code below; Haven't enacted this as I'm still fleshing out the multi-qubit states
-	########################################################################################
-	# def test_ghz_measurements(self):
-	# 	for program in [Programs.program_ghz,Programs.program_ghz_measure_xxx,Programs.program_ghz_measure_xyy,Programs.program_ghz_measure_yxy,Programs.program_ghz_measure_yyx]:
-	# 		self.qc.reset()
-	# 		self.qc.execute(program.code)
-	# 		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
-	# 		probs=Probability.get_probabilities(state_before_measure)
-	# 		self.assertTrue(np.allclose(probs,program.result_probability))
-	# # # # n ~ 3/4 TODO: calculate
-	# # # expectation of YYX should be n
-	# # # expectation of YXY whould be n
-	# # # expectation of XYY should be n
-	# # # expectation of XXX should be -n
-	# # # M=expectation_yyx*expectation_yxy*expectation_xyy*expectation_xxx=~-0.2
-	# def test_composite_gates(self):
-	# 	for program in Programs.all_multi_gate_tests:
-	# 		self.qc.reset()
-	# 		self.qc.execute(program.code)
-	# 		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
-	# 		if not program.bloch_vals:
-	# 			probs=Probability.get_probabilities(state_before_measure)
-	# 			self.assertTrue(np.allclose(probs,program.result_probability))
-	# 		else:
-	# 			# TODO: implement Bloch for entangled qubits and check if
-	# 			raise Exception("haven't implemented Bloch for more than one qubit yet")
-	# def test_grover(self):
-	# 	for program in Programs.all_grover_tests:
-	# 		self.qc.reset()
-	# 		self.qc.execute(program.code)
-	# 		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
-	# 		if not program.bloch_vals:
-	# 			probs=Probability.get_probabilities(state_before_measure)
-	# 			self.assertTrue(np.allclose(probs,program.result_probability))
-	# 		else:
-	# 			# TODO: implement Bloch for entangled qubits and check if
-	# 			raise Exception("haven't implemented Bloch for more than one qubit yet")
-	# def test_deutschjozsa(self):
-	# 	for program in Programs.all_deutschjozsa_tests:
-	# 		self.qc.reset()
-	# 		self.qc.execute(program.code)
-	# 		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
-	# 		if not program.bloch_vals:
-	# 			probs=Probability.get_probabilities(state_before_measure)
-	# 			self.assertTrue(np.allclose(probs,program.result_probability))
-	# 		else:
-	# 			# TODO: implement Bloch for entangled qubits and check if
-	# 			raise Exception("haven't implemented Bloch for more than one qubit yet")		
-	# def test_repetition_code(self):
-	# 	for program in Programs.all_repetition_code_tests:
-	# 		self.qc.reset()
-	# 		self.qc.execute(program.code)
-	# 		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
-	# 		if not program.bloch_vals:
-	# 			probs=Probability.get_probabilities(state_before_measure)
-	# 			self.assertTrue(np.allclose(probs,program.result_probability))
-	# 		else:
-	# 			# TODO: implement Bloch for entangled qubits and check if
-	# 			raise Exception("haven't implemented Bloch for more than one qubit yet")		
-	# def test_plaquette_code(self):
-	# 	for program in Programs.all_plaquette_programs:
-	# 		self.qc.reset()
-	# 		self.qc.execute(program.code)
-	# 		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
-	# 		if not program.bloch_vals:
-	# 			probs=Probability.get_probabilities(state_before_measure)
-	# 			self.assertTrue(np.allclose(probs,program.result_probability))
-	# 		else:
-	# 			# TODO: implement Bloch for entangled qubits and check if
-	# 			raise Exception("haven't implemented Bloch for more than one qubit yet")		
 
+
+
+	def test_ghz(self):
+		program=Programs.program_ghz
+		self.qc.reset()
+		self.qc.execute(program.code)
+		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
+		probs=Probability.get_probabilities(state_before_measure)
+		self.assertTrue(np.allclose(probs,program.result_probability))
+
+	def test_ghz_measure_xxx(self):
+		program=Programs.program_ghz_measure_xxx
+		self.qc.reset()
+		self.qc.execute(program.code)
+		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
+		probs=Probability.get_probabilities(state_before_measure)
+		self.assertTrue(np.allclose(probs,program.result_probability))
+
+
+	def test_ghz_measure_yyx(self):
+		program=Programs.program_ghz_measure_yyx
+		self.qc.reset()
+		self.qc.execute(program.code)
+		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
+		probs=Probability.get_probabilities(state_before_measure)
+		self.assertTrue(np.allclose(probs,program.result_probability))
+
+
+	def test_program_swap_q0_q1(self):
+		program=Programs.program_swap_q0_q1
+		self.qc.reset()
+		self.qc.execute(program.code)
+		for qubit,bloch in zip(["q0","q1","q2","q3","q4"],program.bloch_vals):
+			if bloch:
+				self.assertTrue(self.qc.bloch_coords_equal(qubit,bloch))
+
+	def test_program_controlled_hadamard(self):
+		program=Programs.program_controlled_hadamard
+		self.qc.reset()
+		self.qc.execute(program.code)
+		for qubit,bloch in zip(["q0","q1","q2","q3","q4"],program.bloch_vals):
+			if bloch:
+				self.assertTrue(self.qc.bloch_coords_equal(qubit,bloch))
+
+
+	def test_program_approximate_sqrtT(self):
+		program=Programs.program_approximate_sqrtT
+		self.qc.reset()
+		self.qc.execute(program.code)
+		for qubit,bloch in zip(["q0","q1","q2","q3","q4"],program.bloch_vals):
+			if bloch:
+				self.assertTrue(self.qc.bloch_coords_equal(qubit,bloch))
+
+
+	def test_program_toffoli_state_with_flips(self):
+		program=Programs.program_toffoli_with_flips
+		self.qc.reset()
+		self.qc.execute(program.code)
+		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
+		probs=Probability.get_probabilities(state_before_measure)
+		self.assertTrue(np.allclose(probs,program.result_probability))
+
+	def test_grover(self):
+		for program in Programs.all_grover_tests:
+			self.qc.reset()
+			self.qc.execute(program.code)
+			state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
+			probs=Probability.get_probabilities(state_before_measure)
+			self.assertTrue(np.allclose(probs,program.result_probability))
+
+	def test_plaquette_code(self):
+		for program in Programs.all_normal_plaquette_programs:
+			self.qc.reset()
+			self.qc.execute(program.code)
+			state_before_measure=self.qc.qubits.get_qubit_named("q2").get_noop()
+			probs=Probability.get_probabilities(state_before_measure)
+			self.assertTrue(np.allclose(probs,program.result_probability))
+
+	def test_plaquette_zXplusminusplusminus(self):
+		program=Programs.program_plaquette_zXplusminusplusminus
+		self.qc.reset()
+		self.qc.execute(program.code)
+		state_before_measure=self.qc.qubits.get_qubit_named("q2").get_noop()
+		probs=Probability.get_probabilities(state_before_measure)
+		self.assertTrue(np.allclose(probs,program.result_probability))
+
+	###
+	# Currently these tests below are failing or crashing
+	###
+
+	# Failing:
+
+	def test_ghz_measure_yxy(self):
+		program=Programs.program_ghz_measure_yxy
+		self.qc.reset()
+		self.qc.execute(program.code)
+		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
+		probs=Probability.get_probabilities(state_before_measure)
+		self.assertTrue(np.allclose(probs,program.result_probability))
+
+	def test_ghz_measure_xyy(self):
+		program=Programs.program_ghz_measure_xyy
+		self.qc.reset()
+		self.qc.execute(program.code)
+		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
+		probs=Probability.get_probabilities(state_before_measure)
+		self.assertTrue(np.allclose(probs,program.result_probability))
+
+	def test_program_encoder_into_bitflip_code(self):
+		# Simply fails
+		program=Programs.program_encoder_into_bitflip_code
+		self.qc.reset()
+		self.qc.execute(program.code)
+		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
+		probs=Probability.get_probabilities(state_before_measure)
+		self.assertTrue(np.allclose(probs,program.result_probability))
+		
+	def test_reverse_cnot(self):
+		# Is in canonical ordering; failure is mysterious
+		program=Programs.program_reverse_cnot
+		self.qc.reset()
+		self.qc.execute(program.code)
+		for qubit,result in zip(["q1","q2"],program.result_probability):
+			state_before_measure=self.qc.qubits.get_qubit_named(qubit).get_noop()
+			probs=Probability.get_probabilities(state_before_measure)
+			self.assertTrue(np.allclose(probs,result))
+
+	def test_program_swap(self):
+		# Is in canonical ordering; failure is mysterious
+		program=Programs.program_swap
+		self.qc.reset()
+		self.qc.execute(program.code)
+		for qubit,result in zip(["q1","q2"],program.result_probability):
+			state_before_measure=self.qc.qubits.get_qubit_named(qubit).get_noop()
+			probs=Probability.get_probabilities(state_before_measure)
+			self.assertTrue(np.allclose(probs,result))
+
+	# Crashing:
+	def test_program_toffoli_state(self):
+		# Error with reordering code, shape of reordered is 64x1 and seems to be all empty
+		# This is not in the canonical ordering so we should work to put it in order
+		program=Programs.program_toffoli_state
+		self.qc.reset()
+		self.qc.execute(program.code)
+		# we are going to reset things back to before they were measured
+		on_qubit=self.qc.qubits.get_qubit_named("q0")
+		on_qubit.set_state(on_qubit.get_noop())
+		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",np.array(program.result_probability).reshape(8,1)))
+
+	def test_program_deutschjozsa_constant_n3(self):
+		#ValueError: operands could not be broadcast together with shapes (4) (8) 
+		program=Programs.program_deutschjozsa_n3
+		self.qc.reset()
+		self.qc.execute(program.code)
+		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
+		probs=Probability.get_probabilities(state_before_measure)
+		self.assertTrue(np.allclose(probs,program.result_probability))
+
+	def test_program_deutschjozsa_n3(self):
+		#ValueError: operands could not be broadcast together with shapes (4) (8) 
+		program=Programs.program_deutschjozsa_n3
+		self.qc.reset()
+		self.qc.execute(program.code)
+		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
+		probs=Probability.get_probabilities(state_before_measure)
+		self.assertTrue(np.allclose(probs,program.result_probability))
+
+	def test_program_encoder_into_bitflip_code_parity_checks(self):
+		#Exception: Unrecognized combination of number of qubits, CNOT not supported for > 3 entangled qubits currently
+		program=Programs.program_encoder_into_bitflip_code_parity_checks
+		self.qc.reset()
+		self.qc.execute(program.code)
+		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
+		probs=Probability.get_probabilities(state_before_measure)
+		self.assertTrue(np.allclose(probs,program.result_probability))
+
+	def test_program_encoder_and_decoder_tomography(self):
+		#AttributeError: 'list' object has no attribute 'flat'
+		program=Programs.program_encoder_and_decoder_tomography
+		self.qc.reset()
+		self.qc.execute(program.code)
+		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
+		probs=Probability.get_probabilities(state_before_measure)
+		self.assertTrue(np.allclose(probs,program.result_probability))
 
 
 	def tearDown(self):
 		self.qc=None
-
-
 
 if __name__ == '__main__':
  	unittest.main()
