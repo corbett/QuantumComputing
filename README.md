@@ -7,7 +7,8 @@ This code allows you to execute code printed from the Quantum Composer in IBM's 
 
 Check out any of the test functions for example usage, and the ```Programs``` class contains many example programs in IBM's syntax all available in one place.
 
-Please cite me if you end up using this academically.
+Please cite me if you end up using this academically. For the making of story of this code, along with some pointers to resources on quantum computation, [check out my blog post](https://codexgalactic.com/2016/05/21/5-qubit-quantum-computing-simulator/).
+
 
 # Example usage (with IBM's syntax)
 ```
