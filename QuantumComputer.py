@@ -562,8 +562,9 @@ class QuantumComputer(object):
 	def apply_gate(self,gate,on_qubit_name):
 		on_qubit=self.qubits.get_qubit_named(on_qubit_name)
 		if len(on_qubit.get_noop()) > 0:
-			print "NOTE this qubit has been measured previously"
-			#raise Exception("This qubit has been measured previously, no more gates allowed")
+			print "NOTE this qubit has been measured previously, there should be no more gates allowed but we are reverting that measurement for consistency with IBM's language"
+			on_qubit.set_state(on_qubit.get_noop())
+			on_qubit.set_noop([])
 		if not on_qubit.is_entangled():
 			if on_qubit.get_num_qubits()!=1:
 				raise Exception("This qubit is not marked as entangled but it has an entangled state")
@@ -847,6 +848,7 @@ class Programs(object):
 		h q[2];
 		measure q[1];
 		measure q[2];""",result_probability=[0.25,0,0,0.25,0,0.25,0.25,0]) # "000":0.25; "011": 0.25; "101": 0.25; "110":0.25
+
 
 	program_ghz_measure_xxx=Program("""h q[0];
 		h q[1];
@@ -1995,8 +1997,6 @@ class TestQuantumComputer(unittest.TestCase):
 			self.assertTrue(np.allclose(probs,result_probs))
 			self.assertAlmostEqual(corex,result_cor)
 
-
-
 	def test_ghz(self):
 		program=Programs.program_ghz
 		self.qc.reset()
@@ -2013,7 +2013,6 @@ class TestQuantumComputer(unittest.TestCase):
 		probs=Probability.get_probabilities(state_before_measure)
 		self.assertTrue(np.allclose(probs,program.result_probability))
 
-
 	def test_ghz_measure_yyx(self):
 		program=Programs.program_ghz_measure_yyx
 		self.qc.reset()
@@ -2023,6 +2022,22 @@ class TestQuantumComputer(unittest.TestCase):
 		self.assertTrue(np.allclose(probs,program.result_probability))
 
 
+	def test_ghz_measure_yxy(self):
+		program=Programs.program_ghz_measure_yxy
+		self.qc.reset()
+		self.qc.execute(program.code)
+		state_before_measure=self.qc.qubits.get_qubit_named("q0").get_noop()
+		probs=Probability.get_probabilities(state_before_measure)
+		self.assertTrue(np.allclose(probs,program.result_probability))
+
+	def test_ghz_measure_xyy(self):
+		program=Programs.program_ghz_measure_xyy
+		self.qc.reset()
+		self.qc.execute(program.code)
+		state_before_measure=self.qc.qubits.get_qubit_named("q0").get_noop()
+		probs=Probability.get_probabilities(state_before_measure)
+		self.assertTrue(np.allclose(probs,program.result_probability))
+		
 	def test_program_swap_q0_q1(self):
 		program=Programs.program_swap_q0_q1
 		self.qc.reset()
@@ -2146,37 +2161,6 @@ class TestQuantumComputer(unittest.TestCase):
 		for qubit_name,bloch in zip(["q0","q1","q2","q3","q4"],program.bloch_vals):
 			if bloch:
 				self.assertTrue(self.qc.bloch_coords_equal(qubit_name,bloch))
-
-
-
-	###
-	#Currently these tests below are failing 
-	##
-	#Failing:
-	def test_ghz_measure_yxy(self):
-		# is in order 0,1,2
-		# probs found, probs should be:
-		# [0.12499999999999986, 0.12499999999999986, 0.12499999999999986, 0.12499999999999986, 0.12499999999999986, 0.12499999999999986, 0.12499999999999986, 0.12499999999999986] 
-		# [0.25, 0, 0, 0.25, 0, 0.25, 0.25, 0]
-		program=Programs.program_ghz_measure_yxy
-		self.qc.reset()
-		self.qc.execute(program.code)
-		state_before_measure=self.qc.qubits.get_qubit_named("q0").get_noop()
-		probs=Probability.get_probabilities(state_before_measure)
-		self.assertTrue(np.allclose(probs,program.result_probability))
-
-	def test_ghz_measure_xyy(self):
-		# is in order 0,1,2
-		# probs found, probs should be:
-		# [0.24999999999999978, 0.0, 0.0, 0.24999999999999978, 0.24999999999999978, 0.0, 0.0, 0.24999999999999978] 
-		# [0.25, 0, 0, 0.25, 0, 0.25, 0.25, 0]
-		program=Programs.program_ghz_measure_xyy
-		self.qc.reset()
-		self.qc.execute(program.code)
-		state_before_measure=self.qc.qubits.get_qubit_named("q0").get_noop()
-		probs=Probability.get_probabilities(state_before_measure)
-		self.assertTrue(np.allclose(probs,program.result_probability))
-		
 
 
 	def tearDown(self):
