@@ -21,13 +21,36 @@ ghz_example_code="""h q[0];
 qc=QuantumComputer()
 qc.execute(ghz_example_code)
 Probability.pretty_print_probabilities(qc.qubits.get_qubit_named("q0").get_state())
-qc.reset()
 ```
 This will print
 ```
 |psi>=0.70710678118654724|000>+-0.70710678118654724|111>
 Pr(|000>)=0.500000; Pr(|111>)=0.500000; 
 ```
+
+Or continuing from above
+```
+swap_example_code="""x q[2];
+		cx q[1], q[2];
+		h q[1];
+		h q[2];
+		cx q[1], q[2];
+		h q[1];
+		h q[2];
+		cx q[1], q[2];
+		measure q[1];
+		measure q[2];"""
+qc.reset()
+qc.execute(swap_example_code)
+Probability.pretty_print_probabilities(qc.qubits.get_qubit_named("q2").get_state())
+```
+will print
+```
+|psi>=|10>
+Pr(|10>)=1.000000; 
+```
+
+We'll continue with this example in pure python below.
 
 Note that using IBM's measurment code ```measure q[0];``` will actually collapse the state, but for convenience the internal state before collapse is stored in qubit.get_noop(). Nature doesn't give this to us, but I can can give it to you!
 
