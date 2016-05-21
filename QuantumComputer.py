@@ -288,13 +288,13 @@ class Probability(object):
 				if am!=1:
 					am_desc+='%r|%s>+'%(am,state_desc)
 				else:
-					am_desc+='|%s>+'%(am,state_desc)
+					am_desc+='|%s>+'%(state_desc)
 			if pr!=0:
-				pr_desc+='Pr(|%s>)|=%f; '%(state_desc,pr)
+				pr_desc+='Pr(|%s>)=%f; '%(state_desc,pr)
 		print am_desc[0:-1]
 		print pr_desc
 		if state.shape==(4,1):
-			print "<state>=%f" % probs[0]+probs[3]-probs[1]-probs[2]
+			print "<state>=%f" % float(probs[0]+probs[3]-probs[1]-probs[2])
 
 	@staticmethod
 	def expectation_x(state):
