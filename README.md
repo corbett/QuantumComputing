@@ -1,11 +1,11 @@
 # QuantumComputing
 This is an implementation of IBM's Quantum Experience in simulation; a 5-qubit quantum computer with a limited set of gates. Their implementation is available at quantumexperience.ng.bluemix.net.
 
-This code allows you to execute code printed from the Quantum Composer in IBM's syntax. It is much easier to dig into the internals of how the quantum computer computes by seeing and tracing linear algebra representation of gates and states and their interactions as desired for IBM's examples or for one's own code.
+This code allows you to execute code printed from the Quantum Composer in IBM's syntax. It is much easier to dig into the internals of how the quantum computer computes by seeing and tracing the linear algebra representation of gates and states and their interactions as desired–for IBM's examples or for one's own code.
 
 100% of the examples on the IBM tutorial are provided here, tested for and supported, and many addition tests and examples are provided. In fact, the implementation of the 5-qubit quantum computer simulator is only 675 lines, with approximately twice as many lines of test programs and examples provided.
 
-Check out any of the test functions for example usage, and the Program class has many example programs in IBM's syntax all available in one place.
+Check out any of the test functions for example usage, and the ```Programs``` class contains many example programs in IBM's syntax all available in one place.
 
 Please cite me if you end up using this academically.
 
@@ -30,7 +30,7 @@ This will print
 Pr(|000>)=0.500000; Pr(|111>)=0.500000; 
 ```
 
-Or, using the swap Qubits example IBM tutorial Section IV, Page 1
+Or, using the swap Qubits example IBM tutorial Section IV, Page 2
 ```
 swap_example_code="""x q[2];
 		cx q[1], q[2];
@@ -57,12 +57,12 @@ We'll continue with this example in pure python below.
 Note: using IBM's measurment code ```measure q[0];``` will actually collapse the state, but for convenience the internal state before collapse is stored in qubit.get_noop(). Nature doesn't give this to us, but I can can give it to you!
 
 
-# Pure Python Quantum computing machinery 
+# Pure python quantum computing machinery 
 Quantum computing operations can also be done in pure python, either with the QuantumComputer machinery or by directly manipulating gates.
 ## QuantumComputer machinery
 
 ```
-# Swap Qubits example IBM tutorial Section IV, Page 1
+# Swap Qubits example IBM tutorial Section IV, Page 2
 qc=QuantumComputer()
 qc.apply_gate(Gate.X,"q2")
 qc.apply_two_qubit_gate_CNOT("q1","q2")
@@ -87,7 +87,7 @@ Pr(|10>)=1.000000;
 Note that states are combined by using the Kronecker product. Gates that operate on entangled states are composed from individual qubit acting gates by the Kronecker product of the gate with the Identity. See the internals of ```qc.apply_gate``` or ```qc.apply_two_qubit_gate_CNOT``` for general examples, or feel free to use them instead.
 
 ```
-# Swap Qubits example IBM tutorial Section IV, Page 1 
+# Swap Qubits example IBM tutorial Section IV, Page 2
 q1=State.zero_state
 q2=State.zero_state
 q2=Gate.X*q2
