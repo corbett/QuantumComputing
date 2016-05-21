@@ -34,15 +34,15 @@ class Gate(object):
 	T=np.matrix([[1,0],[0, e**(i_*pi/4.)]])
 	Tdagger=np.matrix([[1,0],[0, e**(-i_*pi/4.)]]) # convenience Tdagger= T.conjugate().transpose()
 
+
+	# TODO: for CNOT gates define programatically instead of the more manual way below
 	## Two qubit gates
 	# CNOT Gate (control is qubit 0, target qubit 1), this is the default CNOT gate
-	# TODO: can I break this down as a tensor product of 2x2 gates? 
 	CNOT2_01=np.matrix('1 0 0 0; 0 1 0 0; 0 0 0 1; 0 0 1 0')
-	# Later may want to remove these, but currently codifying knowledge
 	# control is qubit 1 target is qubit 0 
 	CNOT2_10=np.kron(H,H)*CNOT2_01*np.kron(H,H) #=np.matrix('1 0 0 0; 0 0 0 1; 0 0 1 0; 0 1 0 0') 
 
-	# operates on 2/3 qubits, control is first subscript, target second
+	# operates on 2 out of 3 entangled qubits, control is first subscript, target second
 	CNOT3_01=np.kron(CNOT2_01,eye)
 	CNOT3_10=np.kron(CNOT2_10,eye)
 	CNOT3_12=np.kron(eye,CNOT2_01)
@@ -50,6 +50,7 @@ class Gate(object):
 	CNOT3_02=np.matrix('1 0 0 0 0 0 0 0; 0 1 0 0 0 0 0 0; 0 0 1 0 0 0 0 0; 0 0 0 1 0 0 0 0; 0 0 0 0 0 1 0 0; 0 0 0 0 1 0 0 0; 0 0 0 0 0 0 0 1; 0 0 0 0 0 0 1 0')
 	CNOT3_20=np.matrix('1 0 0 0 0 0 0 0; 0 0 0 0 0 1 0 0; 0 0 1 0 0 0 0 0; 0 0 0 0 0 0 0 1; 0 0 0 0 1 0 0 0; 0 1 0 0 0 0 0 0; 0 0 0 0 0 0 1 0; 0 0 0 1 0 0 0 0')
 
+	# operates on 2 out of 4 entangled qubits, control is first subscript, target second
 	CNOT4_01=np.kron(CNOT3_01,eye)
 	CNOT4_10=np.kron(CNOT3_10,eye)
 	CNOT4_12=np.kron(CNOT3_12,eye)
@@ -71,6 +72,7 @@ class Gate(object):
 	CNOT4_30[np.array([5,13])]=CNOT4_30[np.array([13,5])]
 	CNOT4_30[np.array([7,15])]=CNOT4_30[np.array([15,7])]
 
+	# operates on 2 out of 5 entangled qubits, control is first subscript, target second
 	CNOT5_01=np.kron(CNOT4_01,eye)
 	CNOT5_10=np.kron(CNOT4_10,eye)
 	CNOT5_02=np.kron(CNOT4_02,eye)
@@ -496,7 +498,6 @@ class QuantumComputer(object):
 							current_entangled[idx+1]=first_qubit
 							permute=np.eye(2**n,2**n)
 							all_combos=list(itertools.product([0,1],repeat=n))
-							swapped=range(2**n)
 							already_swapped=[]
 							for icombo,combo in enumerate(all_combos[:len(all_combos)]):
 								new_combo=list(combo)
@@ -508,9 +509,6 @@ class QuantumComputer(object):
 									swapset=set([icombo,inew_combo])
 									if not swapset in already_swapped:
 										already_swapped+=[swapset]
-										tmp=swapped[icombo]
-										swapped[icombo]=swapped[inew_combo]
-										swapped[inew_combo]=tmp
 										permute[np.array([icombo,inew_combo])]=permute[np.array([inew_combo,icombo])]
 							first_qubit.set_entangled(current_entangled)
 							first_qubit.set_state(permute*first_qubit.get_state())
