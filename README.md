@@ -1,5 +1,5 @@
 # QuantumComputing
-This is an implementation of IBM's Quantum Experience in simulation; a 5-qubit quantum computer with a limited set of gates. Their implementation is available at quantumexperience.ng.bluemix.net.
+This is an implementation of IBM's Quantum Experience in simulation; a 5-qubit quantum computer with a limited set of gates "the world’s first quantum computing platform delivered via the IBM Cloud". Their implementation is available at [http://www.research.ibm.com/quantum/](http://www.research.ibm.com/quantum/).
 
 This code allows you to execute code printed from the Quantum Composer in IBM's syntax. It is much easier to dig into the internals of how the quantum computer computes by seeing and tracing the linear algebra representation of gates and states and their interactions as desired–for IBM's examples or for one's own code.
 
