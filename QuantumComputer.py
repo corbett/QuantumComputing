@@ -615,7 +615,7 @@ class QuantumComputer(object):
 				exec 'gate=Gate.CNOT%d_%d%d' %(gate_size,control_qubit_idx,target_qubit_idx) 
 			except:
 				print 'gate=Gate.CNOT%d_%d%d' %(gate_size,control_qubit_idx,target_qubit_idx)
-				raise Exception("Unrecognized combination of number of qubits, CNOT not supported for > 3 entangled qubits currently")
+				raise Exception("Unrecognized combination of number of qubits")
 			first_qubit.set_state(gate*combined_state)
 
 				
