@@ -93,13 +93,13 @@ q1=State.zero_state
 q2=State.zero_state
 q2=Gate.X*q2
 new_state=Gate.CNOT2_01*np.kron(q1,q2)
-H2_1=np.kron(Gate.H,Gate.eye)
-H2_2=np.kron(Gate.eye,Gate.H)
+H2_0=np.kron(Gate.H,Gate.eye)
+H2_1=np.kron(Gate.eye,Gate.H)
+new_state=H2_0*new_state
 new_state=H2_1*new_state
-new_state=H2_2*new_state
 new_state=Gate.CNOT2_01*new_state
+new_state=H2_0*new_state
 new_state=H2_1*new_state
-new_state=H2_2*new_state
 new_state=Gate.CNOT2_01*new_state
 Probability.pretty_print_probabilities(new_state)
 ```
