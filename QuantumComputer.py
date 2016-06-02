@@ -381,7 +381,7 @@ class QuantumRegisterCollection(object):
 			qb.idx = idx
 		self.num_qubits=len(qubits)
 
-	def get_qubit_named(self,name):
+	def get_quantum_register_named(self,name):
 		for qb in self._qubits:
 			if qb.name == name:
 				return qb
@@ -391,18 +391,18 @@ class QuantumRegisterCollection(object):
 						return entqb
 		raise Exception("qubit %s not found" % name)
 
-	def get_qubits(self):
+	def get_quantum_registers(self):
 		return self._qubits
 
-	def entangle_qubits(self,first_qubit,second_qubit):
+	def entangle_quantum_registers(self,first_qubit,second_qubit):
 		new_entangle=first_qubit.get_entangled()+second_qubit.get_entangled()
 		if len(first_qubit.get_entangled()) >= len(second_qubit.get_entangled()):
-			self._remove_qubit_named(second_qubit.name)
+			self._remove_quantum_register_named(second_qubit.name)
 			first_qubit.set_entangled(new_entangle)
 		else:
-			self._remove_qubit_named(first_qubit.name)
+			self._remove_quantum_register_named(first_qubit.name)
 			second_qubit.set_entangled(new_entangle)
-	def _remove_qubit_named(self,name):
+	def _remove_quantum_register_named(self,name):
 		self._qubits=filter(lambda qb: qb.name!=name,self._qubits)
 
 	def is_in_canonical_ordering(self):
@@ -430,7 +430,7 @@ class QuantumRegisterCollection(object):
 				ordering+=[ent.idx]
 		return ordering
 
-	def add_qubit(self,qubit):
+	def add_quantum_register(self,qubit):
 		qubit.idx=self.num_qubits
 		self._qubits+=[qubit]
 		self.num_qubits+=1
@@ -455,7 +455,7 @@ class QuantumComputer(object):
 		return self.qubits.is_in_canonical_ordering()
 
 	def get_requested_state_order(self,name):
-		get_states_for=[self.qubits.get_qubit_named(x.strip()) for x in name.split(',')]
+		get_states_for=[self.qubits.get_quantum_register_named(x.strip()) for x in name.split(',')]
 		if not QuantumRegisterCollection.is_in_increasing_order(get_states_for):
 			raise Exception("at this time, requested qubits must be in increasing order")
 		entangled_qubit_order=self.qubits.get_entangled_qubit_order()
@@ -469,13 +469,13 @@ class QuantumComputer(object):
 				if not get_state_for_qb.idx in eqo and get_state_for_qb.idx in range(min(eqo),max(eqo)+1):
 					print "We'll have to entangle the two"
 					# We'll have to entangle the two
-					qb1=self.qubits.get_qubit_named(eqo[0].name)
+					qb1=self.qubits.get_quantum_register_named(eqo[0].name)
 					get_state_for_qb.set_state(np.kron(qb.get_state(),qb1.get_state()))
-					self.qubits.entangle_qubits(get_state_for_qb,qb1)
+					self.qubits.entangle_quantum_registers(get_state_for_qb,qb1)
 					return self.qubit_states_equal(name,state)
 
 		# OK, if we reach here, we have all the entanglement we need, and we just need to sort the individual entangled states to match the output order
-		for qubit in self.qubits.get_qubits():
+		for qubit in self.qubits.get_quantum_registers():
 			if not QuantumRegisterCollection.is_in_increasing_order(qubit.get_entangled()): # all one apart
 				# We're not in order
 				# We need to assert that the full return can be comprised of concatenating states from beginning to end without extras
@@ -515,7 +515,7 @@ class QuantumComputer(object):
 							swapped=True
 		# OK, if we reach here, everything is in order, and entangled states are either all of interest or none are of interest we just need to return it!
 		answer_state=None
-		for qb in self.qubits.get_qubits():
+		for qb in self.qubits.get_quantum_registers():
 			if set(qb.get_entangled()) <= set(get_states_for):
 				if answer_state==None:
 					answer_state=qb.get_state()
@@ -524,7 +524,7 @@ class QuantumComputer(object):
 		return answer_state
 
 	def probabilities_equal(self,name,prob):
-		get_states_for=[self.qubits.get_qubit_named(x.strip()) for x in name.split(',')]
+		get_states_for=[self.qubits.get_quantum_register_named(x.strip()) for x in name.split(',')]
 		if not QuantumRegisterCollection.is_in_increasing_order(get_states_for):
 			raise Exception("at this time, requested qubits must be in increasing order")
 		entangled_qubit_order=self.qubits.get_entangled_qubit_order()
@@ -535,7 +535,7 @@ class QuantumComputer(object):
 			return np.allclose(Probability.get_probabilities(answer_state),prob,atol=1e-2)			
 
 	def qubit_states_equal(self,name,state):
-		get_states_for=[self.qubits.get_qubit_named(x.strip()) for x in name.split(',')]
+		get_states_for=[self.qubits.get_quantum_register_named(x.strip()) for x in name.split(',')]
 		if not QuantumRegisterCollection.is_in_increasing_order(get_states_for):
 			raise Exception("at this time, requested qubits must be in increasing order")
 		entangled_qubit_order=self.qubits.get_entangled_qubit_order()
@@ -546,7 +546,7 @@ class QuantumComputer(object):
 			return np.allclose(answer_state,state)			
 
 	def bloch_coords_equal(self,name,coords):
-		on_qubit=self.qubits.get_qubit_named(name)
+		on_qubit=self.qubits.get_quantum_register_named(name)
 		if self.is_in_canonical_ordering() and not on_qubit.is_entangled():
 			return np.allclose(on_qubit.get_noop(),coords,atol=1e-3)
 		else:
@@ -558,7 +558,7 @@ class QuantumComputer(object):
 				raise Exception("Entangled measurements that cannot be separatednot yet implemented for bloch sphere")
 
 	def apply_gate(self,gate,on_qubit_name):
-		on_qubit=self.qubits.get_qubit_named(on_qubit_name)
+		on_qubit=self.qubits.get_quantum_register_named(on_qubit_name)
 		if len(on_qubit.get_noop()) > 0:
 			print "NOTE this qubit has been measured previously, there should be no more gates allowed but we are reverting that measurement for consistency with IBM's language"
 			on_qubit.set_state(on_qubit.get_noop())
@@ -585,8 +585,8 @@ class QuantumComputer(object):
 
 	def apply_two_qubit_gate_CNOT(self,first_qubit_name,second_qubit_name):
 		""" Should work for all combination of qubits"""
-		first_qubit=self.qubits.get_qubit_named(first_qubit_name)
-		second_qubit=self.qubits.get_qubit_named(second_qubit_name)
+		first_qubit=self.qubits.get_quantum_register_named(first_qubit_name)
+		second_qubit=self.qubits.get_quantum_register_named(second_qubit_name)
 		if len(first_qubit.get_noop())>0 or len(second_qubit.get_noop())>0:
 			raise Exception("Control or target qubit has been measured previously, no more gates allowed")
 		if not first_qubit.is_entangled() and not second_qubit.is_entangled():
@@ -597,13 +597,13 @@ class QuantumComputer(object):
 			if State.is_fully_separable(new_state):
 				second_qubit.set_state(State.get_second_qubit(new_state))
 			else:
-				self.qubits.entangle_qubits(first_qubit,second_qubit)
+				self.qubits.entangle_quantum_registers(first_qubit,second_qubit)
 				first_qubit.set_state(new_state)
 		else:
 			if not first_qubit.is_entangled_with(second_qubit):
 				# Entangle the state
 				combined_state=np.kron(first_qubit.get_state(),second_qubit.get_state())
-				self.qubits.entangle_qubits(first_qubit,second_qubit)
+				self.qubits.entangle_quantum_registers(first_qubit,second_qubit)
 			else:
 				# We are ready to do the operation
 				combined_state=first_qubit.get_state()
@@ -622,7 +622,7 @@ class QuantumComputer(object):
 
 
 	def bloch(self,qubit_name):
-		on_qubit=self.qubits.get_qubit_named(qubit_name)
+		on_qubit=self.qubits.get_quantum_register_named(qubit_name)
 		if len(on_qubit.get_noop())==0:
 			if not on_qubit.is_entangled():
 				on_qubit.set_noop(State.get_bloch(on_qubit.get_state()))
@@ -630,7 +630,7 @@ class QuantumComputer(object):
 				on_qubit.set_noop([1])
 
 	def measure(self,qubit_name):
-		on_qubit=self.qubits.get_qubit_named(qubit_name)
+		on_qubit=self.qubits.get_quantum_register_named(qubit_name)
 		if len(on_qubit.get_noop())==0:
 			on_qubit.set_noop(on_qubit.get_state()) # state before measurement for testing
 			on_qubit.set_state(State.measure(on_qubit.get_state()))
@@ -1631,58 +1631,58 @@ class TestQuantumComputer(unittest.TestCase):
 		self.assertTrue(self.qc.qubit_states_equal("q0",Gate.H*Gate.T*Gate.Sdagger*Gate.Tdagger*Gate.X*Gate.Y*State.zero_state))
 		# Some tests on entangled gates, breaking abstraction but will improve testing soon
 		self.qc.reset()
-		q0=self.qc.qubits.get_qubit_named("q0")
-		q1=self.qc.qubits.get_qubit_named("q1")
+		q0=self.qc.qubits.get_quantum_register_named("q0")
+		q1=self.qc.qubits.get_quantum_register_named("q1")
 		q0.set_state(np.kron(State.zero_state,State.zero_state))
-		self.qc.qubits.entangle_qubits(q0,q1)
+		self.qc.qubits.entangle_quantum_registers(q0,q1)
 
 		# We will test applying the gate to qubits one and two
 		self.qc.apply_gate(Gate.X,"q0")
-		self.assertEqual(State.string_from_state(self.qc.qubits.get_qubit_named("q0").get_state()),'10')
+		self.assertEqual(State.string_from_state(self.qc.qubits.get_quantum_register_named("q0").get_state()),'10')
 		self.qc.apply_gate(Gate.X,"q0")
-		self.assertEqual(State.string_from_state(self.qc.qubits.get_qubit_named("q0").get_state()),'00')
+		self.assertEqual(State.string_from_state(self.qc.qubits.get_quantum_register_named("q0").get_state()),'00')
 
-		self.assertEqual(self.qc.qubits.get_qubit_named("q1").name,"q1")
+		self.assertEqual(self.qc.qubits.get_quantum_register_named("q1").name,"q1")
 		self.qc.apply_gate(Gate.X,"q1")
-		self.assertEqual(State.string_from_state(self.qc.qubits.get_qubit_named("q0").get_state()),'01')
+		self.assertEqual(State.string_from_state(self.qc.qubits.get_quantum_register_named("q0").get_state()),'01')
 		self.qc.apply_gate(Gate.X,"q1")
-		self.assertEqual(State.string_from_state(self.qc.qubits.get_qubit_named("q0").get_state()),'00')
+		self.assertEqual(State.string_from_state(self.qc.qubits.get_quantum_register_named("q0").get_state()),'00')
 		self.qc.apply_gate(Gate.X,"q0")
-		self.assertEqual(State.string_from_state(self.qc.qubits.get_qubit_named("q0").get_state()),'10')
+		self.assertEqual(State.string_from_state(self.qc.qubits.get_quantum_register_named("q0").get_state()),'10')
 		self.qc.apply_gate(Gate.X,"q1")
-		self.assertEqual(State.string_from_state(self.qc.qubits.get_qubit_named("q0").get_state()),'11')
+		self.assertEqual(State.string_from_state(self.qc.qubits.get_quantum_register_named("q0").get_state()),'11')
 
 		# Now testing on 3 qubits
-		q3=self.qc.qubits.get_qubit_named("q3")
+		q3=self.qc.qubits.get_quantum_register_named("q3")
 		q0.set_state(np.kron(np.kron(State.zero_state,State.zero_state),State.zero_state))
-		self.qc.qubits.entangle_qubits(q0,q3)
-		self.assertEqual(self.qc.qubits.get_qubit_named("q1").name,"q1")
-		self.assertEqual(self.qc.qubits.get_qubit_named("q3").name,"q3")
-		self.assertEqual(self.qc.qubits.get_qubit_named("q0").name,"q0")
-		self.assertEqual(self.qc.qubits.get_qubit_named("q2").name,"q2")
-		self.assertEqual(self.qc.qubits.get_qubit_named("q4").name,"q4")
+		self.qc.qubits.entangle_quantum_registers(q0,q3)
+		self.assertEqual(self.qc.qubits.get_quantum_register_named("q1").name,"q1")
+		self.assertEqual(self.qc.qubits.get_quantum_register_named("q3").name,"q3")
+		self.assertEqual(self.qc.qubits.get_quantum_register_named("q0").name,"q0")
+		self.assertEqual(self.qc.qubits.get_quantum_register_named("q2").name,"q2")
+		self.assertEqual(self.qc.qubits.get_quantum_register_named("q4").name,"q4")
 
 		self.qc.apply_gate(Gate.X,"q0")
-		self.assertEqual(State.string_from_state(self.qc.qubits.get_qubit_named("q0").get_state()),'100')
+		self.assertEqual(State.string_from_state(self.qc.qubits.get_quantum_register_named("q0").get_state()),'100')
 		self.qc.apply_gate(Gate.X,"q0")
-		self.assertEqual(State.string_from_state(self.qc.qubits.get_qubit_named("q0").get_state()),'000')
-		self.assertEqual(self.qc.qubits.get_qubit_named("q1").name,"q1")
+		self.assertEqual(State.string_from_state(self.qc.qubits.get_quantum_register_named("q0").get_state()),'000')
+		self.assertEqual(self.qc.qubits.get_quantum_register_named("q1").name,"q1")
 		self.qc.apply_gate(Gate.X,"q1")
-		self.assertEqual(State.string_from_state(self.qc.qubits.get_qubit_named("q0").get_state()),'010')
+		self.assertEqual(State.string_from_state(self.qc.qubits.get_quantum_register_named("q0").get_state()),'010')
 		self.qc.apply_gate(Gate.X,"q1")
-		self.assertEqual(State.string_from_state(self.qc.qubits.get_qubit_named("q0").get_state()),'000')
+		self.assertEqual(State.string_from_state(self.qc.qubits.get_quantum_register_named("q0").get_state()),'000')
 		self.qc.apply_gate(Gate.X,"q0")
-		self.assertEqual(State.string_from_state(self.qc.qubits.get_qubit_named("q0").get_state()),'100')
+		self.assertEqual(State.string_from_state(self.qc.qubits.get_quantum_register_named("q0").get_state()),'100')
 		self.qc.apply_gate(Gate.X,"q1")
-		self.assertEqual(State.string_from_state(self.qc.qubits.get_qubit_named("q0").get_state()),'110')
+		self.assertEqual(State.string_from_state(self.qc.qubits.get_quantum_register_named("q0").get_state()),'110')
 		self.qc.apply_gate(Gate.X,"q3")
-		self.assertEqual(State.string_from_state(self.qc.qubits.get_qubit_named("q0").get_state()),'111')
+		self.assertEqual(State.string_from_state(self.qc.qubits.get_quantum_register_named("q0").get_state()),'111')
 		self.qc.apply_gate(Gate.X,"q1")
-		self.assertEqual(State.string_from_state(self.qc.qubits.get_qubit_named("q0").get_state()),'101')
+		self.assertEqual(State.string_from_state(self.qc.qubits.get_quantum_register_named("q0").get_state()),'101')
 		self.qc.apply_gate(Gate.X,"q4")
-		self.assertEqual(State.string_from_state(self.qc.qubits.get_qubit_named("q4").get_state()),'1')
+		self.assertEqual(State.string_from_state(self.qc.qubits.get_quantum_register_named("q4").get_state()),'1')
 		self.qc.apply_gate(Gate.X,"q4")
-		self.assertEqual(State.string_from_state(self.qc.qubits.get_qubit_named("q4").get_state()),'0')
+		self.assertEqual(State.string_from_state(self.qc.qubits.get_quantum_register_named("q4").get_state()),'0')
 
 
 	def test_apply_two_qubit_gate_CNOT_target(self):
@@ -1701,17 +1701,17 @@ class TestQuantumComputer(unittest.TestCase):
 
 	def test_apply_two_qubit_gate_CNOT_two_entangled_target(self):
 		# We'll put qubit0 in state |10> and qubit1 is in state |0>
-		q0=self.qc.qubits.get_qubit_named("q0")
-		q1=self.qc.qubits.get_qubit_named("q1")
+		q0=self.qc.qubits.get_quantum_register_named("q0")
+		q1=self.qc.qubits.get_quantum_register_named("q1")
 		q0.set_state(State.state_from_string("10"))
-		self.qc.qubits.entangle_qubits(q0,q1)
+		self.qc.qubits.entangle_quantum_registers(q0,q1)
 		self.qc.apply_two_qubit_gate_CNOT("q0","q2") # Before: 100 After: 101
 		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",State.state_from_string('101')))
 		self.qc.reset()
-		q0=self.qc.qubits.get_qubit_named("q0")
-		q1=self.qc.qubits.get_qubit_named("q1")
+		q0=self.qc.qubits.get_quantum_register_named("q0")
+		q1=self.qc.qubits.get_quantum_register_named("q1")
 		q0.set_state(State.state_from_string("10"))
-		self.qc.qubits.entangle_qubits(q0,q1)
+		self.qc.qubits.entangle_quantum_registers(q0,q1)
 		self.qc.apply_two_qubit_gate_CNOT("q2","q0") # Before: 100 After: 100
 		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",State.state_from_string('100')))
 		self.qc.apply_two_qubit_gate_CNOT("q0","q1") # Before: 100 After: 110
@@ -1723,22 +1723,22 @@ class TestQuantumComputer(unittest.TestCase):
 		for target,control in itertools.product(["q0","q1","q2"],repeat=2):
 			if target!=control:
 				self.qc.reset()
-				q0=self.qc.qubits.get_qubit_named("q0")
-				q1=self.qc.qubits.get_qubit_named("q1")
-				q2=self.qc.qubits.get_qubit_named("q2")
+				q0=self.qc.qubits.get_quantum_register_named("q0")
+				q1=self.qc.qubits.get_quantum_register_named("q1")
+				q2=self.qc.qubits.get_quantum_register_named("q2")
 				q0.set_state(State.state_from_string("000"))
-				self.qc.qubits.entangle_qubits(q0,q1)
-				self.qc.qubits.entangle_qubits(q0,q2)
+				self.qc.qubits.entangle_quantum_registers(q0,q1)
+				self.qc.qubits.entangle_quantum_registers(q0,q2)
 				self.assertEqual(QuantumRegister.num_qubits(q0.get_state()),3)
 				self.qc.apply_two_qubit_gate_CNOT(target,control)
 				self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",State.state_from_string('000')))
 		self.qc.reset()
-		q0=self.qc.qubits.get_qubit_named("q0")
-		q1=self.qc.qubits.get_qubit_named("q1")
-		q2=self.qc.qubits.get_qubit_named("q2")
+		q0=self.qc.qubits.get_quantum_register_named("q0")
+		q1=self.qc.qubits.get_quantum_register_named("q1")
+		q2=self.qc.qubits.get_quantum_register_named("q2")
 		q0.set_state(State.state_from_string("100"))
-		self.qc.qubits.entangle_qubits(q0,q1)
-		self.qc.qubits.entangle_qubits(q0,q2)
+		self.qc.qubits.entangle_quantum_registers(q0,q1)
+		self.qc.qubits.entangle_quantum_registers(q0,q2)
 		self.qc.apply_two_qubit_gate_CNOT("q0","q1") # Before: 100 After: 110
 		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2",State.state_from_string('110')))
 		self.qc.apply_two_qubit_gate_CNOT("q1","q0") # Before: 110 After: 010
@@ -1776,27 +1776,27 @@ class TestQuantumComputer(unittest.TestCase):
 		for target,control in itertools.product(["q0","q1","q2","q3"],repeat=2):
 			if target!=control:
 				self.qc.reset()
-				q0=self.qc.qubits.get_qubit_named("q0")
-				q1=self.qc.qubits.get_qubit_named("q1")
-				q2=self.qc.qubits.get_qubit_named("q2")
-				q3=self.qc.qubits.get_qubit_named("q3")
+				q0=self.qc.qubits.get_quantum_register_named("q0")
+				q1=self.qc.qubits.get_quantum_register_named("q1")
+				q2=self.qc.qubits.get_quantum_register_named("q2")
+				q3=self.qc.qubits.get_quantum_register_named("q3")
 				q0.set_state(State.state_from_string("0000"))
-				self.qc.qubits.entangle_qubits(q0,q1)
-				self.qc.qubits.entangle_qubits(q0,q2)
-				self.qc.qubits.entangle_qubits(q0,q3)
+				self.qc.qubits.entangle_quantum_registers(q0,q1)
+				self.qc.qubits.entangle_quantum_registers(q0,q2)
+				self.qc.qubits.entangle_quantum_registers(q0,q3)
 
 				self.assertEqual(QuantumRegister.num_qubits(q0.get_state()),4)
 				self.qc.apply_two_qubit_gate_CNOT(target,control)
 				self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2,q3",State.state_from_string('0000')))
 		self.qc.reset()
-		q0=self.qc.qubits.get_qubit_named("q0")
-		q1=self.qc.qubits.get_qubit_named("q1")
-		q2=self.qc.qubits.get_qubit_named("q2")
-		q3=self.qc.qubits.get_qubit_named("q3")
+		q0=self.qc.qubits.get_quantum_register_named("q0")
+		q1=self.qc.qubits.get_quantum_register_named("q1")
+		q2=self.qc.qubits.get_quantum_register_named("q2")
+		q3=self.qc.qubits.get_quantum_register_named("q3")
 		q0.set_state(State.state_from_string("1000"))
-		self.qc.qubits.entangle_qubits(q0,q1)
-		self.qc.qubits.entangle_qubits(q0,q2)
-		self.qc.qubits.entangle_qubits(q0,q3)
+		self.qc.qubits.entangle_quantum_registers(q0,q1)
+		self.qc.qubits.entangle_quantum_registers(q0,q2)
+		self.qc.qubits.entangle_quantum_registers(q0,q3)
 
 		self.qc.apply_two_qubit_gate_CNOT("q0","q1") # Before: 1000 After: 1100
 		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2,q3",State.state_from_string('1100')))
@@ -1847,30 +1847,30 @@ class TestQuantumComputer(unittest.TestCase):
 		for target,control in itertools.product(["q0","q1","q2","q3","q4"],repeat=2):
 			if target!=control:
 				self.qc.reset()
-				q0=self.qc.qubits.get_qubit_named("q0")
-				q1=self.qc.qubits.get_qubit_named("q1")
-				q2=self.qc.qubits.get_qubit_named("q2")
-				q3=self.qc.qubits.get_qubit_named("q3")
-				q4=self.qc.qubits.get_qubit_named("q4")
+				q0=self.qc.qubits.get_quantum_register_named("q0")
+				q1=self.qc.qubits.get_quantum_register_named("q1")
+				q2=self.qc.qubits.get_quantum_register_named("q2")
+				q3=self.qc.qubits.get_quantum_register_named("q3")
+				q4=self.qc.qubits.get_quantum_register_named("q4")
 				q0.set_state(State.state_from_string("00000"))
-				self.qc.qubits.entangle_qubits(q0,q1)
-				self.qc.qubits.entangle_qubits(q0,q2)
-				self.qc.qubits.entangle_qubits(q0,q3)
-				self.qc.qubits.entangle_qubits(q0,q4)
+				self.qc.qubits.entangle_quantum_registers(q0,q1)
+				self.qc.qubits.entangle_quantum_registers(q0,q2)
+				self.qc.qubits.entangle_quantum_registers(q0,q3)
+				self.qc.qubits.entangle_quantum_registers(q0,q4)
 				self.assertEqual(QuantumRegister.num_qubits(q0.get_state()),5)
 				self.qc.apply_two_qubit_gate_CNOT(target,control)
 				self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2,q3,q4",State.state_from_string('00000')))
 		self.qc.reset()
-		q0=self.qc.qubits.get_qubit_named("q0")
-		q1=self.qc.qubits.get_qubit_named("q1")
-		q2=self.qc.qubits.get_qubit_named("q2")
-		q3=self.qc.qubits.get_qubit_named("q3")
-		q4=self.qc.qubits.get_qubit_named("q4")
+		q0=self.qc.qubits.get_quantum_register_named("q0")
+		q1=self.qc.qubits.get_quantum_register_named("q1")
+		q2=self.qc.qubits.get_quantum_register_named("q2")
+		q3=self.qc.qubits.get_quantum_register_named("q3")
+		q4=self.qc.qubits.get_quantum_register_named("q4")
 		q0.set_state(State.state_from_string("10000"))
-		self.qc.qubits.entangle_qubits(q0,q1)
-		self.qc.qubits.entangle_qubits(q0,q2)
-		self.qc.qubits.entangle_qubits(q0,q3)
-		self.qc.qubits.entangle_qubits(q0,q4)
+		self.qc.qubits.entangle_quantum_registers(q0,q1)
+		self.qc.qubits.entangle_quantum_registers(q0,q2)
+		self.qc.qubits.entangle_quantum_registers(q0,q3)
+		self.qc.qubits.entangle_quantum_registers(q0,q4)
 
 		self.qc.apply_two_qubit_gate_CNOT("q0","q1") # Before: 10000 After: 11000
 		self.assertTrue(self.qc.qubit_states_equal("q0,q1,q2,q3,q4",State.state_from_string('11000')))
@@ -1989,7 +1989,7 @@ class TestQuantumComputer(unittest.TestCase):
 				[1,1/sqrt(2),1/sqrt(2),1/sqrt(2),-1/sqrt(2)]):
 			self.qc.reset()
 			self.qc.execute(program.code)
-			state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
+			state_before_measure=self.qc.qubits.get_quantum_register_named("q1").get_noop()
 			probs=Probability.get_probabilities(state_before_measure)
 			corex=Probability.get_correlated_expectation(state_before_measure)
 			self.assertTrue(np.allclose(probs,result_probs))
@@ -1999,7 +1999,7 @@ class TestQuantumComputer(unittest.TestCase):
 		program=Programs.program_ghz
 		self.qc.reset()
 		self.qc.execute(program.code)
-		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
+		state_before_measure=self.qc.qubits.get_quantum_register_named("q1").get_noop()
 		probs=Probability.get_probabilities(state_before_measure)
 		self.assertTrue(np.allclose(probs,program.result_probability))
 
@@ -2007,7 +2007,7 @@ class TestQuantumComputer(unittest.TestCase):
 		program=Programs.program_ghz_measure_xxx
 		self.qc.reset()
 		self.qc.execute(program.code)
-		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
+		state_before_measure=self.qc.qubits.get_quantum_register_named("q1").get_noop()
 		probs=Probability.get_probabilities(state_before_measure)
 		self.assertTrue(np.allclose(probs,program.result_probability))
 
@@ -2015,7 +2015,7 @@ class TestQuantumComputer(unittest.TestCase):
 		program=Programs.program_ghz_measure_yyx
 		self.qc.reset()
 		self.qc.execute(program.code)
-		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
+		state_before_measure=self.qc.qubits.get_quantum_register_named("q1").get_noop()
 		probs=Probability.get_probabilities(state_before_measure)
 		self.assertTrue(np.allclose(probs,program.result_probability))
 
@@ -2024,7 +2024,7 @@ class TestQuantumComputer(unittest.TestCase):
 		program=Programs.program_ghz_measure_yxy
 		self.qc.reset()
 		self.qc.execute(program.code)
-		state_before_measure=self.qc.qubits.get_qubit_named("q0").get_noop()
+		state_before_measure=self.qc.qubits.get_quantum_register_named("q0").get_noop()
 		probs=Probability.get_probabilities(state_before_measure)
 		self.assertTrue(np.allclose(probs,program.result_probability))
 
@@ -2032,7 +2032,7 @@ class TestQuantumComputer(unittest.TestCase):
 		program=Programs.program_ghz_measure_xyy
 		self.qc.reset()
 		self.qc.execute(program.code)
-		state_before_measure=self.qc.qubits.get_qubit_named("q0").get_noop()
+		state_before_measure=self.qc.qubits.get_quantum_register_named("q0").get_noop()
 		probs=Probability.get_probabilities(state_before_measure)
 		self.assertTrue(np.allclose(probs,program.result_probability))
 		
@@ -2056,7 +2056,7 @@ class TestQuantumComputer(unittest.TestCase):
 		program=Programs.program_reverse_cnot
 		self.qc.reset()
 		self.qc.execute(program.code)
-		state_before_measure=self.qc.qubits.get_qubit_named("q2").get_noop()
+		state_before_measure=self.qc.qubits.get_quantum_register_named("q2").get_noop()
 		probs=Probability.get_probabilities(state_before_measure)
 		self.assertTrue(np.allclose(probs,program.result_probability))
 
@@ -2064,7 +2064,7 @@ class TestQuantumComputer(unittest.TestCase):
 		program=Programs.program_swap
 		self.qc.reset()
 		self.qc.execute(program.code)
-		state_before_measure=self.qc.qubits.get_qubit_named("q2").get_noop()
+		state_before_measure=self.qc.qubits.get_quantum_register_named("q2").get_noop()
 		probs=Probability.get_probabilities(state_before_measure)
 		self.assertTrue(np.allclose(probs,program.result_probability))
 
@@ -2080,7 +2080,7 @@ class TestQuantumComputer(unittest.TestCase):
 		program=Programs.program_toffoli_with_flips
 		self.qc.reset()
 		self.qc.execute(program.code)
-		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
+		state_before_measure=self.qc.qubits.get_quantum_register_named("q1").get_noop()
 		probs=Probability.get_probabilities(state_before_measure)
 		self.assertTrue(np.allclose(probs,program.result_probability))
 
@@ -2089,7 +2089,7 @@ class TestQuantumComputer(unittest.TestCase):
 		self.qc.reset()
 		self.qc.execute(program.code)
 		# we are going to reset things back to before they were measured
-		on_qubit=self.qc.qubits.get_qubit_named("q0")
+		on_qubit=self.qc.qubits.get_quantum_register_named("q0")
 		on_qubit.set_state(on_qubit.get_noop())
 		self.assertTrue(self.qc.probabilities_equal("q0,q1,q2",np.array(program.result_probability)))
 
@@ -2097,7 +2097,7 @@ class TestQuantumComputer(unittest.TestCase):
 		for program in Programs.all_grover_tests:
 			self.qc.reset()
 			self.qc.execute(program.code)
-			state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
+			state_before_measure=self.qc.qubits.get_quantum_register_named("q1").get_noop()
 			probs=Probability.get_probabilities(state_before_measure)
 			self.assertTrue(np.allclose(probs,program.result_probability))
 
@@ -2106,7 +2106,7 @@ class TestQuantumComputer(unittest.TestCase):
 		program=Programs.program_encoder_into_bitflip_code
 		self.qc.reset()
 		self.qc.execute(program.code)
-		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
+		state_before_measure=self.qc.qubits.get_quantum_register_named("q1").get_noop()
 		probs=Probability.get_probabilities(state_before_measure)
 		self.assertTrue(np.allclose(probs,program.result_probability,atol=1e-3))
 
@@ -2115,7 +2115,7 @@ class TestQuantumComputer(unittest.TestCase):
 		self.qc.reset()
 		self.qc.execute(program.code)
 		# we are going to reset things back to before they were measured
-		on_qubit=self.qc.qubits.get_qubit_named("q0")
+		on_qubit=self.qc.qubits.get_quantum_register_named("q0")
 		on_qubit.set_state(on_qubit.get_noop())
 		self.assertTrue(self.qc.probabilities_equal("q0,q1,q2,q3,q4",np.array(program.result_probability)))
 
@@ -2124,7 +2124,7 @@ class TestQuantumComputer(unittest.TestCase):
 		program=Programs.program_deutschjozsa_n3
 		self.qc.reset()
 		self.qc.execute(program.code)
-		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
+		state_before_measure=self.qc.qubits.get_quantum_register_named("q1").get_noop()
 		probs=Probability.get_probabilities(state_before_measure)
 		self.assertTrue(np.allclose(probs,program.result_probability))
 
@@ -2132,7 +2132,7 @@ class TestQuantumComputer(unittest.TestCase):
 		program=Programs.program_deutschjozsa_n3
 		self.qc.reset()
 		self.qc.execute(program.code)
-		state_before_measure=self.qc.qubits.get_qubit_named("q1").get_noop()
+		state_before_measure=self.qc.qubits.get_quantum_register_named("q1").get_noop()
 		probs=Probability.get_probabilities(state_before_measure)
 		self.assertTrue(np.allclose(probs,program.result_probability))
 
@@ -2140,7 +2140,7 @@ class TestQuantumComputer(unittest.TestCase):
 		for program in Programs.all_normal_plaquette_programs:
 			self.qc.reset()
 			self.qc.execute(program.code)
-			state_before_measure=self.qc.qubits.get_qubit_named("q2").get_noop()
+			state_before_measure=self.qc.qubits.get_quantum_register_named("q2").get_noop()
 			probs=Probability.get_probabilities(state_before_measure)
 			self.assertTrue(np.allclose(probs,program.result_probability))
 
@@ -2148,7 +2148,7 @@ class TestQuantumComputer(unittest.TestCase):
 		program=Programs.program_plaquette_zXplusminusplusminus
 		self.qc.reset()
 		self.qc.execute(program.code)
-		state_before_measure=self.qc.qubits.get_qubit_named("q2").get_noop()
+		state_before_measure=self.qc.qubits.get_quantum_register_named("q2").get_noop()
 		probs=Probability.get_probabilities(state_before_measure)
 		self.assertTrue(np.allclose(probs,program.result_probability))
 
