@@ -461,7 +461,6 @@ class QuantumComputer(object):
 		entangled_qubit_order=self.qubits.get_entangled_qubit_order()
 		# # We know the idxs run range(5)
 		# # We know if the idxs are contiguous, increasing we are good
-		to_entangle=[]
 		for get_state_for_qb in get_states_for:
 			for eqb in entangled_qubit_order:
 				eqo=[q.idx for q in eqb]
@@ -479,7 +478,7 @@ class QuantumComputer(object):
 			if not QuantumRegisterCollection.is_in_increasing_order(qubit.get_entangled()): # all one apart
 				# We're not in order
 				# We need to assert that the full return can be comprised of concatenating states from beginning to end without extras
-				if not set(qubit.get_entangled())<=set(get_states_for):
+				if not set(qubit.get_entangled())<=set(get_states_for) and set(qubit.get_entangled()).intersection(set(get_states_for)):
 					raise Exception("With this entanglement setup we can't fully separate out just the qubits of iterest. Try measuring more bits")
 				# We only care if we actually want to return something from this state Put eqo in order then
 				# We want a sorting algorithm that easily maps to matrix operations, since we only have 5 elements max
