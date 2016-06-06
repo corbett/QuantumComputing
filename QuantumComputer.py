@@ -8,6 +8,7 @@ import random
 import exceptions
 import itertools
 from math import sqrt,pi,e,log
+import time
 ####
 ## Gates
 ####
@@ -1370,11 +1371,11 @@ class Programs(object):
 #########################################################################################
 class TestQuantumRegister(unittest.TestCase):
 	def setUp(self):
-		print "In method", self._testMethodName
-	def setUp(self):
+		self.startTime = time.time()
 		self.q0 = QuantumRegister("q0")
 		self.q1 = QuantumRegister("q1")
 	def tearDown(self):
+		print self._testMethodName, "%.3f" % (time.time() - self.startTime)
 		self.q0=None
 		self.q1=None
 	def test_get_num_qubits(self):
@@ -1385,7 +1386,9 @@ class TestQuantumRegister(unittest.TestCase):
 
 class TestMeasure(unittest.TestCase):
 	def setUp(self):
-		print "In method", self._testMethodName
+		self.startTime = time.time()
+	def tearDown(self):
+		print self._testMethodName, "%.3f" % (time.time() - self.startTime)
 	def test_measure_probs_plus(self):
 		measurements=[]
 		for i in range(100000):
@@ -1417,7 +1420,9 @@ class TestMeasure(unittest.TestCase):
 
 class TestGetBloch(unittest.TestCase):
 	def setUp(self):
-		print "In method", self._testMethodName
+		self.startTime = time.time()
+	def tearDown(self):
+		print self._testMethodName, "%.3f" % (time.time() - self.startTime)
 	def test_get_bloch(self):
 		self.assertTrue(np.allclose(State.get_bloch(State.zero_state),np.array((0,0,1))))
 		self.assertTrue(np.allclose(State.get_bloch(State.one_state),np.array((0,0,-1))))
@@ -1432,7 +1437,9 @@ class TestGetBloch(unittest.TestCase):
 
 class TestGetBloch2(unittest.TestCase):
 	def setUp(self):
-		print "In method", self._testMethodName
+		self.startTime = time.time()
+	def tearDown(self):
+		print self._testMethodName, "%.3f" % (time.time() - self.startTime)
 	def get_bloch_2(self,state):
 		""" equal to get_bloch just a different way of calculating things. Used for testing get_bloch. """
 		return np.array((((state*state.conjugate().transpose()*Gate.X).trace()).item(0),((state*state.conjugate().transpose()*Gate.Y).trace()).item(0),((state*state.conjugate().transpose()*Gate.Z).trace()).item(0)))
@@ -1448,7 +1455,9 @@ class TestGetBloch2(unittest.TestCase):
 
 class TestCNOTGate(unittest.TestCase):	
 	def setUp(self):
-		print "In method", self._testMethodName
+		self.startTime = time.time()
+	def tearDown(self):
+		print self._testMethodName, "%.3f" % (time.time() - self.startTime)
 	def test_CNOT(self):
 		self.assertTrue(np.allclose(Gate.CNOT2_01*State.state_from_string('00'),State.state_from_string('00')))
 		self.assertTrue(np.allclose(Gate.CNOT2_01*State.state_from_string('01'),State.state_from_string('01')))
@@ -1457,7 +1466,9 @@ class TestCNOTGate(unittest.TestCase):
 
 class TestTGate(unittest.TestCase):
 	def setUp(self):
-		print "In method", self._testMethodName
+		self.startTime = time.time()
+	def tearDown(self):
+		print self._testMethodName, "%.3f" % (time.time() - self.startTime)
 	def test_T(self):
 		# This is useful to check some of the exercises on IBM's quantum experience. 
 		# "Ground truth" answers from IBM's calculations which unfortunately are not reported to high precision.
@@ -1473,7 +1484,7 @@ class TestTGate(unittest.TestCase):
 
 class TestMultiQuantumRegisterStates(unittest.TestCase):
 	def setUp(self):
-		print "In method", self._testMethodName
+		self.startTime = time.time()
 		## Two qubit states (basis)
 		# To derive the ordering you do ((+) is outer product):
 		# Symbolically: |00> = |0> (+) |0>; gives 4x1 
@@ -1544,7 +1555,8 @@ class TestMultiQuantumRegisterStates(unittest.TestCase):
 		self.five_qubits_11101=np.kron(self.four_qubits_1110,State.one_state)
 		self.five_qubits_11110=np.kron(self.four_qubits_1111,State.zero_state)
 		self.five_qubits_11111=np.kron(self.four_qubits_1111,State.one_state)
-
+	def tearDown(self):
+		print self._testMethodName, "%.3f" % (time.time() - self.startTime)
 	def test_basis(self):
 		# Sanity checks
 		# 1-qubit
@@ -1623,7 +1635,7 @@ class TestMultiQuantumRegisterStates(unittest.TestCase):
 
 class TestQuantumComputer(unittest.TestCase):
 	def setUp(self):
-		print "In method", self._testMethodName
+		self.startTime = time.time()
 		self.qc=QuantumComputer()
 	def test_apply_gate(self):
 		self.qc.apply_gate(Gate.H*Gate.T*Gate.Sdagger*Gate.Tdagger*Gate.X*Gate.Y,"q0")
@@ -2158,9 +2170,8 @@ class TestQuantumComputer(unittest.TestCase):
 		for qubit_name,bloch in zip(["q0","q1","q2","q3","q4"],program.bloch_vals):
 			if bloch:
 				self.assertTrue(self.qc.bloch_coords_equal(qubit_name,bloch))
-
-
 	def tearDown(self):
+		print self._testMethodName, "%.3f" % (time.time() - self.startTime)
 		self.qc=None
 
 if __name__ == '__main__':
