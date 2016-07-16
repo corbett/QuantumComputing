@@ -23,7 +23,7 @@ ghz_example_code="""h q[0];
 		h q[2];"""
 qc=QuantumComputer()
 qc.execute(ghz_example_code)
-Probability.pretty_print_probabilities(qc.qubits.get_qubit_named("q0").get_state())
+Probability.pretty_print_probabilities(qc.qubits.get_quantum_register_containing("q0").get_state())
 ```
 This will print
 ```
@@ -45,7 +45,7 @@ swap_example_code="""x q[2];
 		measure q[2];"""
 qc.reset()
 qc.execute(swap_example_code)
-Probability.pretty_print_probabilities(qc.qubits.get_qubit_named("q2").get_state())
+Probability.pretty_print_probabilities(qc.qubits.get_quantum_register_containing("q2").get_state())
 ```
 will print
 ```
@@ -75,7 +75,7 @@ qc.apply_gate(Gate.H,"q2")
 qc.apply_two_qubit_gate_CNOT("q1","q2")
 qc.measure("q1")
 qc.measure("q2")
-Probability.pretty_print_probabilities(qc.qubits.get_qubit_named("q1").get_state())
+Probability.pretty_print_probabilities(qc.qubits.get_quantum_register_containing("q1").get_state())
 ```
 Will print
 ```
