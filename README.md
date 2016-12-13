@@ -23,7 +23,7 @@ ghz_example_code="""h q[0];
 		h q[2];"""
 qc=QuantumComputer()
 qc.execute(ghz_example_code)
-Probability.pretty_print_probabilities(qc.qubits.get_qubit_named("q0").get_state())
+Probability.pretty_print_probabilities(qc.qubits.get_quantum_register_containing("q0").get_state())
 ```
 This will print
 ```
@@ -45,17 +45,18 @@ swap_example_code="""x q[2];
 		measure q[2];"""
 qc.reset()
 qc.execute(swap_example_code)
-Probability.pretty_print_probabilities(qc.qubits.get_qubit_named("q2").get_state())
+Probability.pretty_print_probabilities(qc.qubits.get_quantum_register_containing("q2").get_state())
 ```
 will print
 ```
 |psi>=|10>
 Pr(|10>)=1.000000; 
+<state>=-1.000000
 ```
 
 We'll continue with this example in pure python below.
 
-Note: using IBM's measurment code ```measure q[0];``` will actually collapse the state, but for convenience the internal state before collapse is stored in qubit.get_noop(). Nature doesn't give this to us, but I can can give it to you!
+Note: using IBM's measurment code ```measure q[0];``` will actually collapse the state, but for convenience the internal state before collapse is stored in qubit.get_noop(). Nature doesn't give this to us, but I can give it to you!
 
 
 # Pure python quantum computing machinery 
@@ -75,17 +76,18 @@ qc.apply_gate(Gate.H,"q2")
 qc.apply_two_qubit_gate_CNOT("q1","q2")
 qc.measure("q1")
 qc.measure("q2")
-Probability.pretty_print_probabilities(qc.qubits.get_qubit_named("q1").get_state())
+Probability.pretty_print_probabilities(qc.qubits.get_quantum_register_containing("q1").get_state())
 ```
 Will print
 ```
 |psi>=|10>
 Pr(|10>)=1.000000; 
+<state>=-1.000000
 ```
 
 ## Working with Individual States and gates
 
-Note that states are combined by using the Kronecker product. Gates that operate on entangled states are composed from individual qubit acting gates by the Kronecker product of the gate with the Identity. See the internals of ```qc.apply_gate``` or ```qc.apply_two_qubit_gate_CNOT``` for general examples, or feel free to use them instead.
+Note that states are combined by using the Kronecker product. Gates that operate on entangled states are composed from single qubit gates by the Kronecker product of the gate with the Identity. See the internals of ```qc.apply_gate``` or ```qc.apply_two_qubit_gate_CNOT``` for general examples, or feel free to use them instead.
 
 ```
 # Swap Qubits example IBM tutorial Section IV, Page 2
@@ -108,6 +110,7 @@ Will print
 ```
 |psi>=0.99999999999999967|10>
 Pr(|10>)=1.000000;
+<state>=-1.000000
 ```
 
  This final manner of working with the library provides the most complete mathematical understanding of what's going on. Any individual state or gate can be printed, and it is clear how entanglement is represented as this is not done under the hood in this scenario.
