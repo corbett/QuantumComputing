@@ -332,6 +332,7 @@ class QuantumRegister(object):
         self.name = name
         self.idx=None
         self._noop = [] # after a measurement set this so that we can allow no further operations. Set to Bloch coords if bloch operation performed
+
     @staticmethod
     def num_qubits(state):
         num_qubits=log(state.shape[0],2)
@@ -342,6 +343,7 @@ class QuantumRegister(object):
 
     def get_entangled(self):
         return self._entangled
+
     def set_entangled(self,entangled):
         self._entangled=entangled
         for qb in self._entangled:
@@ -379,6 +381,25 @@ class QuantumRegister(object):
         return QuantumRegister.num_qubits(self._state)
     def __eq__(self,other):
         return self.name==other.name and np.allclose(self._noop,other._noop) and np.allclose(self.get_state(),other.get_state()) and QuantumRegisterCollection.orderings_equal(self._entangled,other._entangled)
+    '''
+    A good hash function means values that compare as equal have the same hashes, so:
+        np allclose tolerance values:
+        rtol=1e-05, atol=1e-08
+        absolute(a - b) <= (atol + rtol * absolute(b)) per element of array
+    '''
+    # A simpler hash function
+    def __hash__(self):
+        print('Hashing register %s' % self.name)
+        return hash(self.name)
+    # Outline for a more complex hash function, if this behavior is desired...
+    #def __hash__(self):
+    #    def rounder(n):
+    #        try:
+    #            return round(n, 1)
+    #        except TypeError:
+    #            return n # Can't round complex types
+    #    roundfunc = np.vectorize(rounder)
+    #    return hash((self.name, roundfunc(self._noop), roundfunc(self.get_state()), self._entangled)) 
 
 class QuantumRegisterCollection(object):
     def __init__(self,qubits):
@@ -618,10 +639,10 @@ class QuantumComputer(object):
             gate_size=QuantumRegister.num_qubits(combined_state)
             try:
                 exec('gate=Gate.CNOT%d_%d%d' %(gate_size,control_qubit_idx,target_qubit_idx))
+                first_qubit.set_state(locals()['gate']*combined_state) # See http://stackoverflow.com/questions/15086040/behavior-of-exec-function-in-python-2-and-python-3
             except:
                 print('gate=Gate.CNOT%d_%d%d' %(gate_size,control_qubit_idx,target_qubit_idx))
                 raise Exception("Unrecognized combination of number of qubits")
-            first_qubit.set_state(gate*combined_state)
 
 
 
