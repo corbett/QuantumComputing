@@ -1,9 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# Author: corbett@caltech.edu
+
 from __future__ import division
 #from __future__ import unicode_literals
 from __future__ import absolute_import
 from __future__ import print_function
-# Author: corbett@caltech.edu
 
 import numpy as np
 import unittest
@@ -1637,7 +1638,7 @@ class TestMultiQuantumRegisterStates(unittest.TestCase):
                 (State.one_state)]
         for vg,tg in zip(value_groups,target_groups):
             for value_state,target_state in zip(value_groups,target_groups):
-                self.assertTrue(np.allclose(value_state,target_state))
+                self.assertTrue(np.allclose(np.array(value_state),np.array(target_state)))
 
     def test_string_from_state(self):
         self.assertEqual(State.string_from_state(State.zero_state),'0')
