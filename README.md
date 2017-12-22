@@ -1,7 +1,19 @@
 # Quintuple
 This is an implementation of IBM's Quantum Experience in simulation; a 5-qubit quantum computer with a limited set of gates "the world’s first quantum computing platform delivered via the IBM Cloud". Their implementation is available at [http://www.research.ibm.com/quantum/](http://www.research.ibm.com/quantum/).
 
-This code allows you to execute code printed from the Quantum Composer in IBM's syntax. It is much easier to dig into the internals of how the quantum computer computes by seeing and tracing the linear algebra representation of gates and states and their interactions as desired–for IBM's examples or for one's own code.
+This code allows you to execute code printed from the Quantum Composer in the following syntax: 
+
+|   description       |    usage           |
+| ------------- | ------------- |
+|available qubit list| q[0], q[1], q[2], q[3], q[4]|
+|1-qubit gate list| h,t,tdg,s,sdg,x,y,z,id|
+|1-qubit gate action| gate q[i];|
+|2-qubit CNOT gate list | cx |
+| 2-qubit CNOT gate action| cx q[control], q[target];|
+| measurement operation list | measure, bloch|
+| measurement operation action | operation q[i]; |
+
+It is much easier to dig into the internals of how the quantum computer computes by seeing and tracing the linear algebra representation of gates and states and their interactions as desired–for IBM's examples or for one's own code.
 
 100% of the examples on the IBM tutorial are provided here, tested for and supported, and many addition tests and examples are provided. In fact, the implementation of the 5-qubit quantum computer simulator is only 675 lines, with approximately twice as many lines of test programs and examples provided.
 
@@ -10,7 +22,7 @@ Check out any of the test functions for example usage, and the ```Programs``` cl
 If you make use of this work, please cite my paper available on the physics arXiv as [Quintuple: a Python 5-qubit quantum computer simulator to facilitate cloud quantum computing](http://arxiv.org/abs/1606.09225). For the making of story of this code, along with some pointers to resources on quantum computation, [check out my blog post](https://codexgalactic.com/2016/05/21/5-qubit-quantum-computing-simulator/).
 
 
-# Example usage (with IBM's syntax)
+# Example usage 
 ```
 from QuantumComputer import *
 ghz_example_code="""h q[0];
