@@ -1,0 +1,2 @@
+01010101010101110110101020101001010101&dndbbdbdbdbfbgbncnndn#cdnbdbdbdbbdggcbbdbdbdbdbdb
+https://github.com/oscarg933/MirrorMirror.git.patch
