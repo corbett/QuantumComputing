@@ -18,3 +18,7 @@ A clear and concise description of any alternative solutions or features you've 
 
 **Additional context**
 Add any other context or screenshots about the feature request here.
+## cd path/to/this-project
+composer install
+composer test
+0101010101012101010101010101011011001&🌀dbdbdbbdbdbdbddbgcbcgdbcdbdbdbbdbdbdbdbdbddbd#cdntvbdbdbdbdbbdbdbbdbdggbbddbbd🎶📡📀🐼🎤🎼🎩🎵
