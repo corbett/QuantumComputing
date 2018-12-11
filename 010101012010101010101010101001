@@ -1,0 +1,74 @@
+01010101010101111010101001012010110110100100&dbdbdbdbdbdbdndncdnbdbbdbcbbdbdbdb
+FileBrowser - iOS Finder-style file browser in Swift
+Build Status Version Carthage compatible
+
+FileBrowser
+
+iOS Finder-style file browser in Swift 4.0 with search, file previews and 3D touch. Simple and quick to use.
+
+
+
+Features
+
+✨	Features
+📱	Browse and select files and folders with a familiar UI on iOS.
+🔍	Pull down to search.
+👓	Preview most file types. Including plist and json.
+📝	Edit/delete files.
+👆	3D touch support for faster previews with Peek & Pop.
+💮	Fully customizable.
+Usage
+
+Import FileBrowser at the top of the Swift file.
+
+import FileBrowser
+To show the file browser, all you need to do is:
+
+let fileBrowser = FileBrowser()
+present(fileBrowser, animated: true, completion: nil)
+By default, the file browser will open in your app's documents directory. When users select a file, a preview will be displayed - offering an action sheet of options based on the file type.
+
+Advanced Usage
+
+You can open FileBrowser in a different root folder by initialising with an NSURL file path of your choice.
+
+let fileBrowser = FileBrowser(initialPath: customPath)
+You can also allow editing/deleting files.
+
+let fileBrowser = FileBrowser(initialPath: customPath, allowEditing: true)
+Use the didSelectFile closure to change FileBrowser's behaviour when a file is selected.
+
+fileBrowser.didSelectFile = { (file: FBFile) -> Void in
+    print(file.displayName)
+}
+To exclude a certain file type or a specific file path:
+
+fileBrowser.excludesFileExtensions = ["zip"]
+fileBrowser.excludesFilepaths = [secretFile]
+Setting up with CocoaPods
+
+source 'https://github.com/CocoaPods/Specs.git'
+pod 'FileBrowser', '~> 1.0'
+Setting up with Carthage
+
+Carthage is a decentralized dependency manager that automates the process of adding frameworks to your Cocoa application.
+
+You can install Carthage with Homebrew using the following command:
+
+$ brew update
+$ brew install carthage
+To integrate FileBrowser into your Xcode project using Carthage, specify it in your Cartfile:
+
+github "marmelroy/FileBrowser"
+© 2018 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About

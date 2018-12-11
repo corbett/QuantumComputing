@@ -1,0 +1,116 @@
+https://github.com/oscarg933/cpp_ref_impl.git.patch.ros
+ 
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+Explore
+ @oscarg933 Sign out
+You are over your private repository plan limit (4 of 0). Please upgrade your plan, make private repositories public, or remove private repositories so that you are within your plan limit.
+Your private repositories have been locked until this is resolved. Thanks for understanding. You can contact support with any questions.
+0
+0 366 oscarg933/satis
+forked from composer/satis
+ Code  Pull requests 0  Projects 0  Insights  Settings
+Simple static Composer repository generator - For full private Composer repo use Private Packagist - https://gitter.im/composer/satis
+ 597 commits
+ 2 branches
+ 4 releases
+ 85 contributors
+ MIT
+ PHP 90.0%	 HTML 5.2%	 JavaScript 2.7%	 CSS 0.9%	 Dockerfile 0.7%	 Shell 0.4%	 Batchfile 0.1%
+ Pull request   Compare This branch is 2 commits ahead of composer:master.
+@oscarg933
+oscarg933 Add files via upload
+Latest commit f48945d  just now
+Type	Name	Latest commit message	Commit time
+bin	slightly refactor Dockerfile + entrypoint	2 years ago
+docs	apply php-cs-fixer	3 months ago
+res	510-minify-option-packages-dump (composer#511)	2 months ago
+src	510-minify-option-packages-dump (composer#511)	2 months ago
+tests	Update Satis UI to Bootstrap 4 (composer#512)	2 months ago
+views	Update Satis UI to Bootstrap 4 (composer#512)	2 months ago
+.blackfire.yml	Update .blackfire.yml	9 months ago
+.dockerignore	add comments	3 months ago
+.gitattributes	Update .gitattributes	2 years ago
+.gitignore	Update Satis UI to Bootstrap 4 (composer#512)	2 months ago
+.php_cs.dist	apply php-cs-fixer	3 months ago
+.travis.yml	remove soon to be deprecated 'sudo' keyword	20 days ago
+Dockerfile	use zip/unzip instead of busybox alternatives	20 days ago
+HackatonSinaloa2018-master.zip	Add files via upload	just now
+LICENSE	cleanup readme and license	2 years ago
+README.md	remove section that probably is not very useful to being with	3 months ago
+Veneno.iot.md	Create Veneno.iot.md	22 minutes ago
+box.json	simplify box.json	2 years ago
+composer.json	add php-cs-fixer and run it	7 months ago
+composer.lock	bump deps	3 months ago
+package.json	Update Satis UI to Bootstrap 4 (composer#512)	2 months ago
+php-cli.ini	tweak docker build	3 months ago
+phpunit.xml.dist	apply php-cs-fixer	3 months ago
+webpack.config.js	Update Satis UI to Bootstrap 4 (composer#512)	2 months ago
+ README.md
+Satis
+Simple static Composer repository generator.
+
+Build Status codecov
+
+Run from source
+Install satis: composer create-project composer/satis:dev-master
+Build a repository: php bin/satis build <configuration-file> <output-dir>
+Read the more detailed instructions in the documentation.
+
+Run as Docker container
+Pull the image:
+
+docker pull composer/satis
+Run the image (with Composer cache from host):
+
+docker run --rm --init -it \
+  -u $(id -u):$(id -g) \
+  -v $(pwd)/build:/build \
+  -v "${COMPOSER_HOME:-$HOME/.composer}:/composer" \
+  composer/satis
+If you want to run the image without implicitly running Satis, you have to override the entrypoint specified in the Dockerfile:
+
+--entrypoint /bin/sh
+Purge
+If you choose to archive packages as part of your build, over time you can be left with useless files. With the purge command, you can delete these files.
+
+php bin/satis purge <configuration-file> <output-dir>
+Note: don't do this unless you are certain your projects no longer reference any of these archives in their composer.lock files.
+
+Updating
+Updating Satis is as simple as running git pull && composer install in the Satis directory.
+
+If you are running Satis as a Docker container, simply pull the latest image.
+
+Contributing
+Please note that this project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms.
+
+Fork the project, create a feature branch, and send us a pull request.
+
+Authors
+See the list of contributors who participate(d) in this project.
+
+Community Tools
+satis-go - A simple web server for managing Satis configuration and hosting the generated Composer repository.
+satisfy - Symfony based composer repository manager with a simple web UI.
+satis-control-panel - Simple web UI for managing your Satis Repository with optional CI integration.
+composer-satis-builder - Simple tool for updating the Satis configuration (satis.json) "require" key on the basis of the project composer.json.
+License
+Satis is licensed under the MIT License - see the LICENSE file for details
+
+© 2018 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
+Press h to open a hovercard with more details.

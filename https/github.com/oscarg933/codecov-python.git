@@ -1,0 +1,1122 @@
+travis_fold:start:worker_info
+[0K[33;1mWorker information[0m
+hostname: 7f47ef9c-5d30-4b67-aae2-dac60b48b1f3@1.production-2-worker-org-gce-js42
+version: v5.1.0 https://github.com/travis-ci/worker/tree/0bdbc36fc39a4c4c18f44c0a80f1eadac7a66a65
+instance: travis-job-7fad8cfd-9c26-4680-9cac-d9507c95b8bd travis-ci-garnet-trusty-1512502259-986baf0 (via amqp)
+startup: 6.304664755s
+travis_fold:end:worker_info
+[0Ktravis_fold:start:system_info
+[0K[33;1mBuild system information[0m
+Build language: python
+Build group: stable
+Build dist: trusty
+Build id: 466344565
+Job id: 466344572
+Runtime kernel version: 4.4.0-101-generic
+travis-build version: abc8a7aee
+[34m[1mBuild image provisioning date and time[0m
+Tue Dec  5 19:58:13 UTC 2017
+[34m[1mOperating System Details[0m
+Distributor ID:	Ubuntu
+Description:	Ubuntu 14.04.5 LTS
+Release:	14.04
+Codename:	trusty
+[34m[1mCookbooks Version[0m
+7c2c6a6 https://github.com/travis-ci/travis-cookbooks/tree/7c2c6a6
+[34m[1mgit version[0m
+git version 2.15.1
+[34m[1mbash version[0m
+GNU bash, version 4.3.11(1)-release (x86_64-pc-linux-gnu)
+[34m[1mgcc version[0m
+gcc (Ubuntu 4.8.4-2ubuntu1~14.04.3) 4.8.4
+Copyright (C) 2013 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+[34m[1mdocker version[0m
+Client:
+ Version:      17.09.0-ce
+ API version:  1.32
+ Go version:   go1.8.3
+ Git commit:   afdb6d4
+ Built:        Tue Sep 26 22:42:38 2017
+ OS/Arch:      linux/amd64
+
+Server:
+ Version:      17.09.0-ce
+ API version:  1.32 (minimum version 1.12)
+ Go version:   go1.8.3
+ Git commit:   afdb6d4
+ Built:        Tue Sep 26 22:41:20 2017
+ OS/Arch:      linux/amd64
+ Experimental: false
+[34m[1mclang version[0m
+clang version 5.0.0 (tags/RELEASE_500/final)
+Target: x86_64-unknown-linux-gnu
+Thread model: posix
+InstalledDir: /usr/local/clang-5.0.0/bin
+[34m[1mjq version[0m
+jq-1.5
+[34m[1mbats version[0m
+Bats 0.4.0
+[34m[1mshellcheck version[0m
+0.4.6
+[34m[1mshfmt version[0m
+v2.0.0
+[34m[1mccache version[0m
+ccache version 3.1.9
+
+Copyright (C) 2002-2007 Andrew Tridgell
+Copyright (C) 2009-2011 Joel Rosdahl
+
+This program is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation; either version 3 of the License, or (at your option) any later
+version.
+[34m[1mcmake version[0m
+cmake version 3.9.2
+
+CMake suite maintained and supported by Kitware (kitware.com/cmake).
+[34m[1mheroku version[0m
+heroku-cli/6.14.39-addc925 (linux-x64) node-v9.2.0
+[34m[1mimagemagick version[0m
+Version: ImageMagick 6.7.7-10 2017-07-31 Q16 http://www.imagemagick.org
+[34m[1mmd5deep version[0m
+4.2
+[34m[1mmercurial version[0m
+Mercurial Distributed SCM (version 4.2.2)
+(see https://mercurial-scm.org for more information)
+
+Copyright (C) 2005-2017 Matt Mackall and others
+This is free software; see the source for copying conditions. There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+[34m[1mmysql version[0m
+mysql  Ver 14.14 Distrib 5.6.33, for debian-linux-gnu (x86_64) using  EditLine wrapper
+[34m[1mopenssl version[0m
+OpenSSL 1.0.1f 6 Jan 2014
+[34m[1mpacker version[0m
+Packer v1.0.2
+
+Your version of Packer is out of date! The latest version
+is 1.1.2. You can update by downloading from www.packer.io
+[34m[1mpostgresql client version[0m
+psql (PostgreSQL) 9.6.6
+[34m[1mragel version[0m
+Ragel State Machine Compiler version 6.8 Feb 2013
+Copyright (c) 2001-2009 by Adrian Thurston
+[34m[1msubversion version[0m
+svn, version 1.8.8 (r1568071)
+   compiled Aug 10 2017, 17:20:39 on x86_64-pc-linux-gnu
+
+Copyright (C) 2013 The Apache Software Foundation.
+This software consists of contributions made by many people;
+see the NOTICE file for more information.
+Subversion is open source software, see http://subversion.apache.org/
+
+The following repository access (RA) modules are available:
+
+* ra_svn : Module for accessing a repository using the svn network protocol.
+  - with Cyrus SASL authentication
+  - handles 'svn' scheme
+* ra_local : Module for accessing a repository on local disk.
+  - handles 'file' scheme
+* ra_serf : Module for accessing a repository via WebDAV protocol using serf.
+  - using serf 1.3.3
+  - handles 'http' scheme
+  - handles 'https' scheme
+
+[34m[1msudo version[0m
+Sudo version 1.8.9p5
+Configure options: --prefix=/usr -v --with-all-insults --with-pam --with-fqdn --with-logging=syslog --with-logfac=authpriv --with-env-editor --with-editor=/usr/bin/editor --with-timeout=15 --with-password-timeout=0 --with-passprompt=[sudo] password for %p:  --without-lecture --with-tty-tickets --disable-root-mailer --enable-admin-flag --with-sendmail=/usr/sbin/sendmail --with-timedir=/var/lib/sudo --mandir=/usr/share/man --libexecdir=/usr/lib/sudo --with-sssd --with-sssd-lib=/usr/lib/x86_64-linux-gnu --with-selinux
+Sudoers policy plugin version 1.8.9p5
+Sudoers file grammar version 43
+
+Sudoers path: /etc/sudoers
+Authentication methods: 'pam'
+Syslog facility if syslog is being used for logging: authpriv
+Syslog priority to use when user authenticates successfully: notice
+Syslog priority to use when user authenticates unsuccessfully: alert
+Send mail if the user is not in sudoers
+Use a separate timestamp for each user/tty combo
+Lecture user the first time they run sudo
+Root may run sudo
+Allow some information gathering to give useful error messages
+Require fully-qualified hostnames in the sudoers file
+Visudo will honor the EDITOR environment variable
+Set the LOGNAME and USER environment variables
+Length at which to wrap log file lines (0 for no wrap): 80
+Authentication timestamp timeout: 15.0 minutes
+Password prompt timeout: 0.0 minutes
+Number of tries to enter a password: 3
+Umask to use or 0777 to use user's: 022
+Path to mail program: /usr/sbin/sendmail
+Flags for mail program: -t
+Address to send mail to: root
+Subject line for mail messages: *** SECURITY information for %h ***
+Incorrect password message: Sorry, try again.
+Path to authentication timestamp dir: /var/lib/sudo
+Default password prompt: [sudo] password for %p: 
+Default user to run commands as: root
+Value to override user's $PATH with: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+Path to the editor for use by visudo: /usr/bin/editor
+When to require a password for 'list' pseudocommand: any
+When to require a password for 'verify' pseudocommand: all
+File descriptors >= 3 will be closed before executing a command
+Environment variables to check for sanity:
+	TZ
+	TERM
+	LINGUAS
+	LC_*
+	LANGUAGE
+	LANG
+	COLORTERM
+Environment variables to remove:
+	RUBYOPT
+	RUBYLIB
+	PYTHONUSERBASE
+	PYTHONINSPECT
+	PYTHONPATH
+	PYTHONHOME
+	TMPPREFIX
+	ZDOTDIR
+	READNULLCMD
+	NULLCMD
+	FPATH
+	PERL5DB
+	PERL5OPT
+	PERL5LIB
+	PERLLIB
+	PERLIO_DEBUG 
+	JAVA_TOOL_OPTIONS
+	SHELLOPTS
+	GLOBIGNORE
+	PS4
+	BASH_ENV
+	ENV
+	TERMCAP
+	TERMPATH
+	TERMINFO_DIRS
+	TERMINFO
+	_RLD*
+	LD_*
+	PATH_LOCALE
+	NLSPATH
+	HOSTALIASES
+	RES_OPTIONS
+	LOCALDOMAIN
+	CDPATH
+	IFS
+Environment variables to preserve:
+	JAVA_HOME
+	TRAVIS
+	CI
+	DEBIAN_FRONTEND
+	XAUTHORIZATION
+	XAUTHORITY
+	PS2
+	PS1
+	PATH
+	LS_COLORS
+	KRB5CCNAME
+	HOSTNAME
+	HOME
+	DISPLAY
+	COLORS
+Locale to use while parsing sudoers: C
+Directory in which to store input/output logs: /var/log/sudo-io
+File in which to store the input/output log: %{seq}
+Add an entry to the utmp/utmpx file when allocating a pty
+PAM service name to use
+PAM service name to use for login shells
+Create a new PAM session for the command to run in
+Maximum I/O log sequence number: 0
+
+Local IP address and netmask pairs:
+	10.240.0.28/255.255.255.255
+	172.17.0.1/255.255.0.0
+
+Sudoers I/O plugin version 1.8.9p5
+[34m[1mgzip version[0m
+gzip 1.6
+Copyright (C) 2007, 2010, 2011 Free Software Foundation, Inc.
+Copyright (C) 1993 Jean-loup Gailly.
+This is free software.  You may redistribute copies of it under the terms of
+the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.
+There is NO WARRANTY, to the extent permitted by law.
+
+Written by Jean-loup Gailly.
+[34m[1mzip version[0m
+Copyright (c) 1990-2008 Info-ZIP - Type 'zip "-L"' for software license.
+This is Zip 3.0 (July 5th 2008), by Info-ZIP.
+Currently maintained by E. Gordon.  Please send bug reports to
+the authors using the web page at www.info-zip.org; see README for details.
+
+Latest sources and executables are at ftp://ftp.info-zip.org/pub/infozip,
+as of above date; see http://www.info-zip.org/ for other sites.
+
+Compiled with gcc 4.8.2 for Unix (Linux ELF) on Oct 21 2013.
+
+Zip special compilation options:
+	USE_EF_UT_TIME       (store Universal Time)
+	BZIP2_SUPPORT        (bzip2 library version 1.0.6, 6-Sept-2010)
+	    bzip2 code and library copyright (c) Julian R Seward
+	    (See the bzip2 license for terms of use)
+	SYMLINK_SUPPORT      (symbolic links supported)
+	LARGE_FILE_SUPPORT   (can read and write large files on file system)
+	ZIP64_SUPPORT        (use Zip64 to store large files in archives)
+	UNICODE_SUPPORT      (store and read UTF-8 Unicode paths)
+	STORE_UNIX_UIDs_GIDs (store UID/GID sizes/values using new extra field)
+	UIDGID_NOT_16BIT     (old Unix 16-bit UID/GID extra field not used)
+	[encryption, version 2.91 of 05 Jan 2007] (modified for Zip 3)
+
+Encryption notice:
+	The encryption code of this program is not copyrighted and is
+	put in the public domain.  It was originally written in Europe
+	and, to the best of our knowledge, can be freely distributed
+	in both source and object forms from any country, including
+	the USA under License Exception TSU of the U.S. Export
+	Administration Regulations (section 740.13(e)) of 6 June 2002.
+
+Zip environment options:
+             ZIP:  [none]
+          ZIPOPT:  [none]
+[34m[1mvim version[0m
+VIM - Vi IMproved 7.4 (2013 Aug 10, compiled Nov 24 2016 16:43:18)
+Included patches: 1-52
+Extra patches: 8.0.0056
+Modified by pkg-vim-maintainers@lists.alioth.debian.org
+Compiled by buildd@
+Huge version without GUI.  Features included (+) or not (-):
++acl             +farsi           +mouse_netterm   +syntax
++arabic          +file_in_path    +mouse_sgr       +tag_binary
++autocmd         +find_in_path    -mouse_sysmouse  +tag_old_static
+-balloon_eval    +float           +mouse_urxvt     -tag_any_white
+-browse          +folding         +mouse_xterm     -tcl
+++builtin_terms  -footer          +multi_byte      +terminfo
++byte_offset     +fork()          +multi_lang      +termresponse
++cindent         +gettext         -mzscheme        +textobjects
+-clientserver    -hangul_input    +netbeans_intg   +title
+-clipboard       +iconv           +path_extra      -toolbar
++cmdline_compl   +insert_expand   -perl            +user_commands
++cmdline_hist    +jumplist        +persistent_undo +vertsplit
++cmdline_info    +keymap          +postscript      +virtualedit
++comments        +langmap         +printer         +visual
++conceal         +libcall         +profile         +visualextra
++cryptv          +linebreak       +python          +viminfo
++cscope          +lispindent      -python3         +vreplace
++cursorbind      +listcmds        +quickfix        +wildignore
++cursorshape     +localmap        +reltime         +wildmenu
++dialog_con      -lua             +rightleft       +windows
++diff            +menu            -ruby            +writebackup
++digraphs        +mksession       +scrollbind      -X11
+-dnd             +modify_fname    +signs           -xfontset
+-ebcdic          +mouse           +smartindent     -xim
++emacs_tags      -mouseshape      -sniff           -xsmp
++eval            +mouse_dec       +startuptime     -xterm_clipboard
++ex_extra        +mouse_gpm       +statusline      -xterm_save
++extra_search    -mouse_jsbterm   -sun_workshop    -xpm
+   system vimrc file: "$VIM/vimrc"
+     user vimrc file: "$HOME/.vimrc"
+ 2nd user vimrc file: "~/.vim/vimrc"
+      user exrc file: "$HOME/.exrc"
+  fall-back for $VIM: "/usr/share/vim"
+Compilation: gcc -c -I. -Iproto -DHAVE_CONFIG_H     -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=1      
+Linking: gcc   -Wl,-Bsymbolic-functions -Wl,-z,relro -Wl,--as-needed -o vim        -lm -ltinfo -lnsl  -lselinux  -lacl -lattr -lgpm -ldl    -L/usr/lib/python2.7/config-x86_64-linux-gnu -lpython2.7 -lpthread -ldl -lutil -lm -Xlinker -export-dynamic -Wl,-O1 -Wl,-Bsymbolic-functions      
+[34m[1miptables version[0m
+iptables v1.4.21
+[34m[1mcurl version[0m
+curl 7.35.0 (x86_64-pc-linux-gnu) libcurl/7.35.0 OpenSSL/1.0.1f zlib/1.2.8 libidn/1.28 librtmp/2.3
+[34m[1mwget version[0m
+GNU Wget 1.15 built on linux-gnu.
+[34m[1mrsync version[0m
+rsync  version 3.1.0  protocol version 31
+[34m[1mgimme version[0m
+v1.2.0
+[34m[1mnvm version[0m
+0.33.6
+[34m[1mperlbrew version[0m
+/home/travis/perl5/perlbrew/bin/perlbrew  - App::perlbrew/0.80
+[34m[1mphpenv version[0m
+rbenv 1.1.1-25-g6aa70b6
+[34m[1mrvm version[0m
+rvm 1.29.3 (latest) by Michal Papis, Piotr Kuczynski, Wayne E. Seguin [https://rvm.io]
+[34m[1mdefault ruby version[0m
+ruby 2.4.1p111 (2017-03-22 revision 58053) [x86_64-linux]
+[34m[1mCouchDB version[0m
+couchdb 1.6.1
+[34m[1mElasticSearch version[0m
+5.5.0
+[34m[1mInstalled Firefox version[0m
+firefox 56.0.2
+[34m[1mMongoDB version[0m
+MongoDB 3.4.10
+[34m[1mPhantomJS version[0m
+2.1.1
+[34m[1mPre-installed PostgreSQL versions[0m
+9.2.24
+9.3.20
+9.4.15
+9.5.10
+9.6.6
+[34m[1mRabbitMQ Version[0m
+3.6.14
+[34m[1mRedis version[0m
+redis-server 4.0.6
+[34m[1mriak version[0m
+2.2.3
+[34m[1mPre-installed Go versions[0m
+1.7.4
+[34m[1mant version[0m
+Apache Ant(TM) version 1.9.3 compiled on April 8 2014
+[34m[1mmvn version[0m
+Apache Maven 3.5.2 (138edd61fd100ec658bfa2d307c43b76940a5d7d; 2017-10-18T07:58:13Z)
+Maven home: /usr/local/maven-3.5.2
+Java version: 1.8.0_151, vendor: Oracle Corporation
+Java home: /usr/lib/jvm/java-8-oracle/jre
+Default locale: en_US, platform encoding: UTF-8
+OS name: "linux", version: "4.4.0-98-generic", arch: "amd64", family: "unix"
+[34m[1mgradle version[0m
+
+------------------------------------------------------------
+Gradle 4.0.1
+------------------------------------------------------------
+
+Build time:   2017-07-07 14:02:41 UTC
+Revision:     38e5dc0f772daecca1d2681885d3d85414eb6826
+
+Groovy:       2.4.11
+Ant:          Apache Ant(TM) version 1.9.6 compiled on June 29 2015
+JVM:          1.8.0_151 (Oracle Corporation 25.151-b12)
+OS:           Linux 4.4.0-98-generic amd64
+
+[34m[1mlein version[0m
+Leiningen 2.8.1 on Java 1.8.0_151 Java HotSpot(TM) 64-Bit Server VM
+[34m[1mPre-installed Node.js versions[0m
+v4.8.6
+v6.12.0
+v6.12.1
+v8.9
+v8.9.1
+[34m[1mphpenv versions[0m
+  system
+  5.6
+* 5.6.32 (set by /home/travis/.phpenv/version)
+  7.0
+  7.0.25
+  7.1
+  7.1.11
+  hhvm
+  hhvm-stable
+[34m[1mcomposer --version[0m
+Composer version 1.5.2 2017-09-11 16:59:25
+[34m[1mPre-installed Ruby versions[0m
+ruby-2.2.7
+ruby-2.3.4
+ruby-2.4.1
+travis_fold:end:system_info
+[0K
+travis_fold:start:apt
+[0K[33;1mInstalling APT Packages[0m
+travis_time:start:108a56c0
+[0K$ travis_apt_get_update
+travis_time:end:108a56c0:start=1544504816497399512,finish=1544504822378694064,duration=5881294552
+[0Ktravis_time:start:3ce6a939
+[0K$ sudo -E apt-get -yq --no-install-suggests --no-install-recommends $(travis_apt_get_options) install python-requests python-coverage python-mock
+Reading package lists...
+Building dependency tree...
+Reading state information...
+Suggested packages:
+  python-mock-doc
+Recommended packages:
+  libjs-jquery-hotkeys libjs-jquery-isonscreen libjs-jquery-tablesorter
+The following NEW packages will be installed:
+  python-coverage python-mock
+The following packages will be upgraded:
+  python-requests
+1 upgraded, 2 newly installed, 0 to remove and 278 not upgraded.
+Need to get 137 kB of archives.
+After this operation, 483 kB of additional disk space will be used.
+Get:1 http://us-east-1.ec2.archive.ubuntu.com/ubuntu trusty/main amd64 python-coverage amd64 3.7.1+dfsg.1-1ubuntu2 [69.3 kB]
+Get:2 http://us-east-1.ec2.archive.ubuntu.com/ubuntu trusty-updates/main amd64 python-requests all 2.2.1-1ubuntu0.4 [43.5 kB]
+Get:3 http://us-east-1.ec2.archive.ubuntu.com/ubuntu trusty/main amd64 python-mock all 1.0.1-3 [23.8 kB]
+Fetched 137 kB in 0s (0 B/s)
+Selecting previously unselected package python-coverage.
+(Reading database ... 
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading database ... 95%
+(Reading database ... 100%
+(Reading database ... 93695 files and directories currently installed.)
+Preparing to unpack .../python-coverage_3.7.1+dfsg.1-1ubuntu2_amd64.deb ...
+Unpacking python-coverage (3.7.1+dfsg.1-1ubuntu2) ...
+Preparing to unpack .../python-requests_2.2.1-1ubuntu0.4_all.deb ...
+Unpacking python-requests (2.2.1-1ubuntu0.4) over (2.2.1-1ubuntu0.3) ...
+Selecting previously unselected package python-mock.
+Preparing to unpack .../python-mock_1.0.1-3_all.deb ...
+Unpacking python-mock (1.0.1-3) ...
+Processing triggers for man-db (2.6.7.1-1ubuntu1) ...
+Setting up python-coverage (3.7.1+dfsg.1-1ubuntu2) ...
+Setting up python-requests (2.2.1-1ubuntu0.4) ...
+Setting up python-mock (1.0.1-3) ...
+travis_time:end:3ce6a939:start=1544504822382237729,finish=1544504824651258601,duration=2269020872
+[0Ktravis_fold:end:apt
+[0K
+travis_fold:start:git.checkout
+[0Ktravis_time:start:226f3ba8
+[0K$ git clone --depth=50 https://github.com/codecov/codecov-python.git codecov/codecov-python
+Cloning into 'codecov/codecov-python'...
+remote: Enumerating objects: 371, done.[K
+remote: Counting objects:   0% (1/371)   [K
+remote: Counting objects:   1% (4/371)   [K
+remote: Counting objects:   2% (8/371)   [K
+remote: Counting objects:   3% (12/371)   [K
+remote: Counting objects:   4% (15/371)   [K
+remote: Counting objects:   5% (19/371)   [K
+remote: Counting objects:   6% (23/371)   [K
+remote: Counting objects:   7% (26/371)   [K
+remote: Counting objects:   8% (30/371)   [K
+remote: Counting objects:   9% (34/371)   [K
+remote: Counting objects:  10% (38/371)   [K
+remote: Counting objects:  11% (41/371)   [K
+remote: Counting objects:  12% (45/371)   [K
+remote: Counting objects:  13% (49/371)   [K
+remote: Counting objects:  14% (52/371)   [K
+remote: Counting objects:  15% (56/371)   [K
+remote: Counting objects:  16% (60/371)   [K
+remote: Counting objects:  17% (64/371)   [K
+remote: Counting objects:  18% (67/371)   [K
+remote: Counting objects:  19% (71/371)   [K
+remote: Counting objects:  20% (75/371)   [K
+remote: Counting objects:  21% (78/371)   [K
+remote: Counting objects:  22% (82/371)   [K
+remote: Counting objects:  23% (86/371)   
+remote: Counting objects:  24% (90/371)   [K
+remote: Counting objects:  25% (93/371)   [K
+remote: Counting objects:  26% (97/371)   [K
+remote: Counting objects:  27% (101/371)   [K
+remote: Counting objects:  28% (104/371)   [K
+remote: Counting objects:  29% (108/371)   [K
+remote: Counting objects:  30% (112/371)   [K
+remote: Counting objects:  31% (116/371)   [K
+remote: Counting objects:  32% (119/371)   [K
+remote: Counting objects:  33% (123/371)   [K
+remote: Counting objects:  34% (127/371)   [K
+remote: Counting objects:  35% (130/371)   [K
+remote: Counting objects:  36% (134/371)   [K
+remote: Counting objects:  37% (138/371)   [K
+remote: Counting objects:  38% (141/371)   [K
+remote: Counting objects:  39% (145/371)   [K
+remote: Counting objects:  40% (149/371)   [K
+remote: Counting objects:  41% (153/371)   [K
+remote: Counting objects:  42% (156/371)   [K
+remote: Counting objects:  43% (160/371)   [K
+remote: Counting objects:  44% (164/371)   [K
+remote: Counting objects:  45% (167/371)   [K
+remote: Counting objects:  46% (171/371)   [K
+remote: Counting objects:  47% (175/371)   [K
+remote: Counting objects:  48% (179/371)   [K
+remote: Counting objects:  49% (182/371)   [K
+remote: Counting objects:  50% (186/371)   [K
+remote: Counting objects:  51% (190/371)   [K
+remote: Counting objects:  52% (193/371)   [K
+remote: Counting objects:  53% (197/371)   [K
+remote: Counting objects:  54% (201/371)   [K
+remote: Counting objects:  55% (205/371)   [K
+remote: Counting objects:  56% (208/371)   [K
+remote: Counting objects:  57% (212/371)   [K
+remote: Counting objects:  58% (216/371)   [K
+remote: Counting objects:  59% (219/371)   [K
+remote: Counting objects:  60% (223/371)   [K
+remote: Counting objects:  61% (227/371)   [K
+remote: Counting objects:  62% (231/371)   [K
+remote: Counting objects:  63% (234/371)   [K
+remote: Counting objects:  64% (238/371)   [K
+remote: Counting objects:  65% (242/371)   [K
+remote: Counting objects:  66% (245/371)   [K
+remote: Counting objects:  67% (249/371)   [K
+remote: Counting objects:  68% (253/371)   [K
+remote: Counting objects:  69% (256/371)   [K
+remote: Counting objects:  70% (260/371)   [K
+remote: Counting objects:  71% (264/371)   [K
+remote: Counting objects:  72% (268/371)   [K
+remote: Counting objects:  73% (271/371)   [K
+remote: Counting objects:  74% (275/371)   [K
+remote: Counting objects:  75% (279/371)   [K
+remote: Counting objects:  76% (282/371)   [K
+remote: Counting objects:  77% (286/371)   [K
+remote: Counting objects:  78% (290/371)   [K
+remote: Counting objects:  79% (294/371)   [K
+remote: Counting objects:  80% (297/371)   [K
+remote: Counting objects:  81% (301/371)   [K
+remote: Counting objects:  82% (305/371)   [K
+remote: Counting objects:  83% (308/371)   [K
+remote: Counting objects:  84% (312/371)   [K
+remote: Counting objects:  85% (316/371)   [K
+remote: Counting objects:  86% (320/371)   [K
+remote: Counting objects:  87% (323/371)   [K
+remote: Counting objects:  88% (327/371)   [K
+remote: Counting objects:  89% (331/371)   [K
+remote: Counting objects:  90% (334/371)   [K
+remote: Counting objects:  91% (338/371)   [K
+remote: Counting objects:  92% (342/371)   [K
+remote: Counting objects:  93% (346/371)   [K
+remote: Counting objects:  94% (349/371)   [K
+remote: Counting objects:  95% (353/371)   [K
+remote: Counting objects:  96% (357/371)   [K
+remote: Counting objects:  97% (360/371)   [K
+remote: Counting objects:  98% (364/371)   [K
+remote: Counting objects:  99% (368/371)   [K
+remote: Counting objects: 100% (371/371)   [K
+remote: Counting objects: 100% (371/371), done.[K
+remote: Compressing objects:   0% (1/204)   [K
+remote: Compressing objects:   1% (3/204)   [K
+remote: Compressing objects:   2% (5/204)   [K
+remote: Compressing objects:   3% (7/204)   [K
+remote: Compressing objects:   4% (9/204)   [K
+remote: Compressing objects:   5% (11/204)   [K
+remote: Compressing objects:   6% (13/204)   [K
+remote: Compressing objects:   7% (15/204)   [K
+remote: Compressing objects:   8% (17/204)   [K
+remote: Compressing objects:   9% (19/204)   [K
+remote: Compressing objects:  10% (21/204)   [K
+remote: Compressing objects:  11% (23/204)   [K
+remote: Compressing objects:  12% (25/204)   [K
+remote: Compressing objects:  13% (27/204)   [K
+remote: Compressing objects:  14% (29/204)   [K
+remote: Compressing objects:  15% (31/204)   [K
+remote: Compressing objects:  16% (33/204)   [K
+remote: Compressing objects:  17% (35/204)   [K
+remote: Compressing objects:  18% (37/204)   [K
+remote: Compressing objects:  19% (39/204)   [K
+remote: Compressing objects:  20% (41/204)   [K
+remote: Compressing objects:  21% (43/204)   [K
+remote: Compressing objects:  22% (45/204)   [K
+remote: Compressing objects:  23% (47/204)   [K
+remote: Compressing objects:  24% (49/204)   [K
+remote: Compressing objects:  25% (51/204)   [K
+remote: Compressing objects:  26% (54/204)   [K
+remote: Compressing objects:  27% (56/204)   [K
+remote: Compressing objects:  28% (58/204)   [K
+remote: Compressing objects:  29% (60/204)   [K
+remote: Compressing objects:  30% (62/204)   [K
+remote: Compressing objects:  31% (64/204)   [K
+remote: Compressing objects:  32% (66/204)   [K
+remote: Compressing objects:  33% (68/204)   [K
+remote: Compressing objects:  34% (70/204)   [K
+remote: Compressing objects:  35% (72/204)   [K
+remote: Compressing objects:  36% (74/204)   [K
+remote: Compressing objects:  37% (76/204)   [K
+remote: Compressing objects:  38% (78/204)   [K
+remote: Compressing objects:  39% (80/204)   [K
+remote: Compressing objects:  40% (82/204)   [K
+remote: Compressing objects:  41% (84/204)   [K
+remote: Compressing objects:  42% (86/204)   [K
+remote: Compressing objects:  43% (88/204)   [K
+remote: Compressing objects:  44% (90/204)   [K
+remote: Compressing objects:  45% (92/204)   [K
+remote: Compressing objects:  46% (94/204)   [K
+remote: Compressing objects:  47% (96/204)   [K
+remote: Compressing objects:  48% (98/204)   [K
+remote: Compressing objects:  49% (100/204)   [K
+remote: Compressing objects:  50% (102/204)   [K
+remote: Compressing objects:  51% (105/204)   [K
+remote: Compressing objects:  52% (107/204)   [K
+remote: Compressing objects:  53% (109/204)   [K
+remote: Compressing objects:  54% (111/204)   [K
+remote: Compressing objects:  55% (113/204)   [K
+remote: Compressing objects:  56% (115/204)   [K
+remote: Compressing objects:  57% (117/204)   [K
+remote: Compressing objects:  58% (119/204)   [K
+remote: Compressing objects:  59% (121/204)   [K
+remote: Compressing objects:  60% (123/204)   [K
+remote: Compressing objects:  61% (125/204)   [K
+remote: Compressing objects:  62% (127/204)   [K
+remote: Compressing objects:  63% (129/204)   [K
+remote: Compressing objects:  64% (131/204)   [K
+remote: Compressing objects:  65% (133/204)   [K
+remote: Compressing objects:  66% (135/204)   [K
+remote: Compressing objects:  67% (137/204)   [K
+remote: Compressing objects:  68% (139/204)   [K
+remote: Compressing objects:  69% (141/204)   [K
+remote: Compressing objects:  70% (143/204)   [K
+remote: Compressing objects:  71% (145/204)   [K
+remote: Compressing objects:  72% (147/204)   [K
+remote: Compressing objects:  73% (149/204)   [K
+remote: Compressing objects:  74% (151/204)   [K
+remote: Compressing objects:  75% (153/204)   [K
+remote: Compressing objects:  76% (156/204)   [K
+remote: Compressing objects:  77% (158/204)   [K
+remote: Compressing objects:  78% (160/204)   [K
+remote: Compressing objects:  79% (162/204)   [K
+remote: Compressing objects:  80% (164/204)   [K
+remote: Compressing objects:  81% (166/204)   [K
+remote: Compressing objects:  82% (168/204)   [K
+remote: Compressing objects:  83% (170/204)   [K
+remote: Compressing objects:  84% (172/204)   [K
+remote: Compressing objects:  85% (174/204)   [K
+remote: Compressing objects:  86% (176/204)   [K
+remote: Compressing objects:  87% (178/204)   [K
+remote: Compressing objects:  88% (180/204)   [K
+remote: Compressing objects:  89% (182/204)   [K
+remote: Compressing objects:  90% (184/204)   [K
+remote: Compressing objects:  91% (186/204)   [K
+remote: Compressing objects:  92% (188/204)   [K
+remote: Compressing objects:  93% (190/204)   [K
+remote: Compressing objects:  94% (192/204)   [K
+remote: Compressing objects:  95% (194/204)   [K
+remote: Compressing objects:  96% (196/204)   [K
+remote: Compressing objects:  97% (198/204)   [K
+remote: Compressing objects:  98% (200/204)   [K
+remote: Compressing objects:  99% (202/204)   [K
+remote: Compressing objects: 100% (204/204)   [K
+remote: Compressing objects: 100% (204/204), done.[K
+Receiving objects:   0% (1/371)   
+Receiving objects:   1% (4/371)   
+Receiving objects:   2% (8/371)   
+Receiving objects:   3% (12/371)   
+Receiving objects:   4% (15/371)   
+Receiving objects:   5% (19/371)   
+Receiving objects:   6% (23/371)   
+Receiving objects:   7% (26/371)   
+Receiving objects:   8% (30/371)   
+Receiving objects:   9% (34/371)   
+Receiving objects:  10% (38/371)   
+Receiving objects:  11% (41/371)   
+Receiving objects:  12% (45/371)   
+Receiving objects:  13% (49/371)   
+Receiving objects:  14% (52/371)   
+Receiving objects:  15% (56/371)   
+Receiving objects:  16% (60/371)   
+Receiving objects:  17% (64/371)   
+Receiving objects:  18% (67/371)   
+Receiving objects:  19% (71/371)   
+Receiving objects:  20% (75/371)   
+Receiving objects:  21% (78/371)   
+Receiving objects:  22% (82/371)   
+Receiving objects:  23% (86/371)   
+Receiving objects:  24% (90/371)   
+Receiving objects:  25% (93/371)   
+Receiving objects:  26% (97/371)   
+Receiving objects:  27% (101/371)   
+Receiving objects:  28% (104/371)   
+Receiving objects:  29% (108/371)   
+Receiving objects:  30% (112/371)   
+Receiving objects:  31% (116/371)   
+Receiving objects:  32% (119/371)   
+Receiving objects:  33% (123/371)   
+Receiving objects:  34% (127/371)   
+Receiving objects:  35% (130/371)   
+Receiving objects:  36% (134/371)   
+Receiving objects:  37% (138/371)   
+Receiving objects:  38% (141/371)   
+Receiving objects:  39% (145/371)   
+Receiving objects:  40% (149/371)   
+Receiving objects:  41% (153/371)   
+Receiving objects:  42% (156/371)   
+Receiving objects:  43% (160/371)   
+Receiving objects:  44% (164/371)   
+Receiving objects:  45% (167/371)   
+Receiving objects:  46% (171/371)   
+Receiving objects:  47% (175/371)   
+Receiving objects:  48% (179/371)   
+Receiving objects:  49% (182/371)   
+Receiving objects:  50% (186/371)   
+Receiving objects:  51% (190/371)   
+Receiving objects:  52% (193/371)   
+Receiving objects:  53% (197/371)   
+Receiving objects:  54% (201/371)   
+Receiving objects:  55% (205/371)   
+Receiving objects:  56% (208/371)   
+Receiving objects:  57% (212/371)   
+Receiving objects:  58% (216/371)   
+Receiving objects:  59% (219/371)   
+Receiving objects:  60% (223/371)   
+Receiving objects:  61% (227/371)   
+Receiving objects:  62% (231/371)   
+Receiving objects:  63% (234/371)   
+Receiving objects:  64% (238/371)   
+Receiving objects:  65% (242/371)   
+Receiving objects:  66% (245/371)   
+Receiving objects:  67% (249/371)   
+Receiving objects:  68% (253/371)   
+Receiving objects:  69% (256/371)   
+Receiving objects:  70% (260/371)   
+Receiving objects:  71% (264/371)   
+Receiving objects:  72% (268/371)   
+Receiving objects:  73% (271/371)   
+Receiving objects:  74% (275/371)   
+Receiving objects:  75% (279/371)   
+Receiving objects:  76% (282/371)   
+Receiving objects:  77% (286/371)   
+Receiving objects:  78% (290/371)   
+remote: Total 371 (delta 186), reused 334 (delta 159), pack-reused 0[K
+Receiving objects:  79% (294/371)   
+Receiving objects:  80% (297/371)   
+Receiving objects:  81% (301/371)   
+Receiving objects:  82% (305/371)   
+Receiving objects:  83% (308/371)   
+Receiving objects:  84% (312/371)   
+Receiving objects:  85% (316/371)   
+Receiving objects:  86% (320/371)   
+Receiving objects:  87% (323/371)   
+Receiving objects:  88% (327/371)   
+Receiving objects:  89% (331/371)   
+Receiving objects:  90% (334/371)   
+Receiving objects:  91% (338/371)   
+Receiving objects:  92% (342/371)   
+Receiving objects:  93% (346/371)   
+Receiving objects:  94% (349/371)   
+Receiving objects:  95% (353/371)   
+Receiving objects:  96% (357/371)   
+Receiving objects:  97% (360/371)   
+Receiving objects:  98% (364/371)   
+Receiving objects:  99% (368/371)   
+Receiving objects: 100% (371/371)   
+Receiving objects: 100% (371/371), 69.92 KiB | 3.04 MiB/s, done.
+Resolving deltas:   0% (0/186)   
+Resolving deltas:   5% (11/186)   
+Resolving deltas:  10% (20/186)   
+Resolving deltas:  12% (24/186)   
+Resolving deltas:  42% (79/186)   
+Resolving deltas:  54% (101/186)   
+Resolving deltas:  56% (105/186)   
+Resolving deltas:  63% (118/186)   
+Resolving deltas:  72% (135/186)   
+Resolving deltas:  73% (136/186)   
+Resolving deltas: 100% (186/186)   
+Resolving deltas: 100% (186/186), done.
+travis_time:end:226f3ba8:start=1544504824655474412,finish=1544504825295330515,duration=639856103
+[0K$ cd codecov/codecov-python
+travis_time:start:0176c662
+[0K$ git fetch origin +refs/pull/172/merge:
+remote: Enumerating objects: 45, done.[K
+remote: Counting objects:   2% (1/41)   [K
+remote: Counting objects:   4% (2/41)   [K
+remote: Counting objects:   7% (3/41)   [K
+remote: Counting objects:   9% (4/41)   [K
+remote: Counting objects:  12% (5/41)   [K
+remote: Counting objects:  14% (6/41)   [K
+remote: Counting objects:  17% (7/41)   [K
+remote: Counting objects:  19% (8/41)   [K
+remote: Counting objects:  21% (9/41)   [K
+remote: Counting objects:  24% (10/41)   [K
+remote: Counting objects:  26% (11/41)   [K
+remote: Counting objects:  29% (12/41)   [K
+remote: Counting objects:  31% (13/41)   [K
+remote: Counting objects:  34% (14/41)   [K
+remote: Counting objects:  36% (15/41)   [K
+remote: Counting objects:  39% (16/41)   [K
+remote: Counting objects:  41% (17/41)   [K
+remote: Counting objects:  43% (18/41)   [K
+remote: Counting objects:  46% (19/41)   [K
+remote: Counting objects:  48% (20/41)   [K
+remote: Counting objects:  51% (21/41)   [K
+remote: Counting objects:  53% (22/41)   [K
+remote: Counting objects:  56% (23/41)   [K
+remote: Counting objects:  58% (24/41)   [K
+remote: Counting objects:  60% (25/41)   [K
+remote: Counting objects:  63% (26/41)   [K
+remote: Counting objects:  65% (27/41)   [K
+remote: Counting objects:  68% (28/41)   [K
+remote: Counting objects:  70% (29/41)   [K
+remote: Counting objects:  73% (30/41)   [K
+remote: Counting objects:  75% (31/41)   [K
+remote: Counting objects:  78% (32/41)   [K
+remote: Counting objects:  80% (33/41)   [K
+remote: Counting objects:  82% (34/41)   [K
+remote: Counting objects:  85% (35/41)   [K
+remote: Counting objects:  87% (36/41)   [K
+remote: Counting objects:  90% (37/41)   [K
+remote: Counting objects:  92% (38/41)   [K
+remote: Counting objects:  95% (39/41)   [K
+remote: Counting objects:  97% (40/41)   [K
+remote: Counting objects: 100% (41/41)   [K
+remote: Counting objects: 100% (41/41), done.[K
+remote: Compressing objects:   3% (1/26)   [K
+remote: Compressing objects:   7% (2/26)   [K
+remote: Compressing objects:  11% (3/26)   [K
+remote: Compressing objects:  15% (4/26)   [K
+remote: Compressing objects:  19% (5/26)   [K
+remote: Compressing objects:  23% (6/26)   [K
+remote: Compressing objects:  26% (7/26)   [K
+remote: Compressing objects:  30% (8/26)   [K
+remote: Compressing objects:  34% (9/26)   [K
+remote: Compressing objects:  38% (10/26)   [K
+remote: Compressing objects:  42% (11/26)   [K
+remote: Compressing objects:  46% (12/26)   [K
+remote: Compressing objects:  50% (13/26)   [K
+remote: Compressing objects:  53% (14/26)   [K
+remote: Compressing objects:  57% (15/26)   [K
+remote: Compressing objects:  61% (16/26)   [K
+remote: Compressing objects:  65% (17/26)   [K
+remote: Compressing objects:  69% (18/26)   [K
+remote: Compressing objects:  73% (19/26)   [K
+remote: Compressing objects:  76% (20/26)   [K
+remote: Compressing objects:  80% (21/26)   [K
+remote: Compressing objects:  84% (22/26)   [K
+remote: Compressing objects:  88% (23/26)   [K
+remote: Compressing objects:  92% (24/26)   [K
+remote: Compressing objects:  96% (25/26)   [K
+remote: Compressing objects: 100% (26/26)   [K
+remote: Compressing objects: 100% (26/26), done.[K
+Unpacking objects:   3% (1/29)   
+Unpacking objects:   6% (2/29)   
+Unpacking objects:  10% (3/29)   
+Unpacking objects:  13% (4/29)   
+Unpacking objects:  17% (5/29)   
+Unpacking objects:  20% (6/29)   
+Unpacking objects:  24% (7/29)   
+Unpacking objects:  27% (8/29)   
+Unpacking objects:  31% (9/29)   
+Unpacking objects:  34% (10/29)   
+Unpacking objects:  37% (11/29)   
+Unpacking objects:  41% (12/29)   
+Unpacking objects:  44% (13/29)   
+Unpacking objects:  48% (14/29)   
+Unpacking objects:  51% (15/29)   
+Unpacking objects:  55% (16/29)   
+Unpacking objects:  58% (17/29)   
+Unpacking objects:  62% (18/29)   
+Unpacking objects:  65% (19/29)   
+Unpacking objects:  68% (20/29)   
+Unpacking objects:  72% (21/29)   
+remote: Total 29 (delta 9), reused 1 (delta 0), pack-reused 0[K
+Unpacking objects:  75% (22/29)   
+Unpacking objects:  79% (23/29)   
+Unpacking objects:  82% (24/29)   
+Unpacking objects:  86% (25/29)   
+Unpacking objects:  89% (26/29)   
+Unpacking objects:  93% (27/29)   
+Unpacking objects:  96% (28/29)   
+Unpacking objects: 100% (29/29)   
+Unpacking objects: 100% (29/29), done.
+From https://github.com/codecov/codecov-python
+ * branch            refs/pull/172/merge -> FETCH_HEAD
+travis_time:end:0176c662:start=1544504825299375138,finish=1544504825887671434,duration=588296296
+[0K$ git checkout -qf FETCH_HEAD
+travis_fold:end:git.checkout
+[0K
+travis_time:start:14841b9a
+[0K$ source ~/virtualenv/python2.7_with_system_site_packages/bin/activate
+travis_time:end:14841b9a:start=1544504825903284536,finish=1544504825911529282,duration=8244746
+[0K$ python --version
+Python 2.7.6
+$ pip --version
+pip 9.0.1 from /home/travis/virtualenv/python2.7_with_system_site_packages/local/lib/python2.7/site-packages (python 2.7)
+travis_fold:start:install.1
+[0Ktravis_time:start:1c7b659f
+[0K$ pip install -r tests/requirements.txt
+Requirement already satisfied: coverage in /usr/lib/python2.7/dist-packages (from -r tests/requirements.txt (line 1))
+Collecting ddt (from -r tests/requirements.txt (line 2))
+/home/travis/virtualenv/python2.7_with_system_site_packages/local/lib/python2.7/site-packages/pip/_vendor/requests/packages/urllib3/util/ssl_.py:318: SNIMissingWarning: An HTTPS request has been made, but the SNI (Subject Name Indication) extension to TLS is not available on this platform. This may cause the server to present an incorrect TLS certificate, which can cause validation failures. You can upgrade to a newer version of Python to solve this. For more information, see https://urllib3.readthedocs.io/en/latest/security.html#snimissingwarning.
+  SNIMissingWarning
+/home/travis/virtualenv/python2.7_with_system_site_packages/local/lib/python2.7/site-packages/pip/_vendor/requests/packages/urllib3/util/ssl_.py:122: InsecurePlatformWarning: A true SSLContext object is not available. This prevents urllib3 from configuring SSL appropriately and may cause certain SSL connections to fail. You can upgrade to a newer version of Python to solve this. For more information, see https://urllib3.readthedocs.io/en/latest/security.html#insecureplatformwarning.
+  InsecurePlatformWarning
+/home/travis/virtualenv/python2.7_with_system_site_packages/local/lib/python2.7/site-packages/pip/_vendor/requests/packages/urllib3/util/ssl_.py:122: InsecurePlatformWarning: A true SSLContext object is not available. This prevents urllib3 from configuring SSL appropriately and may cause certain SSL connections to fail. You can upgrade to a newer version of Python to solve this. For more information, see https://urllib3.readthedocs.io/en/latest/security.html#insecureplatformwarning.
+  InsecurePlatformWarning
+/home/travis/virtualenv/python2.7_with_system_site_packages/local/lib/python2.7/site-packages/pip/_vendor/requests/packages/urllib3/util/ssl_.py:122: InsecurePlatformWarning: A true SSLContext object is not available. This prevents urllib3 from configuring SSL appropriately and may cause certain SSL connections to fail. You can upgrade to a newer version of Python to solve this. For more information, see https://urllib3.readthedocs.io/en/latest/security.html#insecureplatformwarning.
+  InsecurePlatformWarning
+  Downloading https://files.pythonhosted.org/packages/e4/d8/4649ee669e41760d82463057215d93efa899ed0472a05b256b9ff7ba53c2/ddt-1.2.0-py2.py3-none-any.whl
+Requirement already satisfied: mock in /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages (from -r tests/requirements.txt (line 3))
+Requirement already satisfied: pytest in /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages (from -r tests/requirements.txt (line 4))
+Collecting pytest-cov (from -r tests/requirements.txt (line 5))
+/home/travis/virtualenv/python2.7_with_system_site_packages/local/lib/python2.7/site-packages/pip/_vendor/requests/packages/urllib3/util/ssl_.py:122: InsecurePlatformWarning: A true SSLContext object is not available. This prevents urllib3 from configuring SSL appropriately and may cause certain SSL connections to fail. You can upgrade to a newer version of Python to solve this. For more information, see https://urllib3.readthedocs.io/en/latest/security.html#insecureplatformwarning.
+  InsecurePlatformWarning
+  Downloading https://files.pythonhosted.org/packages/30/0a/1b009b525526cd3cd9f52f52391b426c5a3597447be811a10bcb1f6b05eb/pytest_cov-2.6.0-py2.py3-none-any.whl
+Requirement already satisfied: funcsigs in /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages (from -r tests/requirements.txt (line 6))
+Requirement already satisfied: requests in /usr/lib/python2.7/dist-packages (from -r tests/requirements.txt (line 7))
+Collecting unittest2 (from -r tests/requirements.txt (line 8))
+/home/travis/virtualenv/python2.7_with_system_site_packages/local/lib/python2.7/site-packages/pip/_vendor/requests/packages/urllib3/util/ssl_.py:122: InsecurePlatformWarning: A true SSLContext object is not available. This prevents urllib3 from configuring SSL appropriately and may cause certain SSL connections to fail. You can upgrade to a newer version of Python to solve this. For more information, see https://urllib3.readthedocs.io/en/latest/security.html#insecureplatformwarning.
+  InsecurePlatformWarning
+  Downloading https://files.pythonhosted.org/packages/72/20/7f0f433060a962200b7272b8c12ba90ef5b903e218174301d0abfd523813/unittest2-1.1.0-py2.py3-none-any.whl (96kB)
+[?25l
+[K    10% |â–ˆâ–ˆâ–ˆâ–                            | 10kB 27.7MB/s eta 0:00:01
+[K    21% |â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‰                         | 20kB 27.3MB/s eta 0:00:01
+[K    31% |â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–                     | 30kB 3.0MB/s eta 0:00:01
+[K    42% |â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‹                  | 40kB 3.9MB/s eta 0:00:01
+[K    53% |â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ               | 51kB 4.7MB/s eta 0:00:01
+[K    63% |â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–           | 61kB 5.5MB/s eta 0:00:01
+[K    74% |â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‰        | 71kB 3.5MB/s eta 0:00:01
+[K    84% |â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–    | 81kB 3.9MB/s eta 0:00:01
+[K    95% |â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–‹ | 92kB 4.4MB/s eta 0:00:01
+[K    100% |â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ| 102kB 3.4MB/s 
+[?25hRequirement already satisfied: six>=1.9 in /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages (from mock->-r tests/requirements.txt (line 3))
+Requirement already satisfied: pbr>=0.11 in /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages (from mock->-r tests/requirements.txt (line 3))
+Requirement already satisfied: attrs>=17.2.0 in /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages (from pytest->-r tests/requirements.txt (line 4))
+Requirement already satisfied: pluggy<0.7,>=0.5 in /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages (from pytest->-r tests/requirements.txt (line 4))
+Requirement already satisfied: setuptools in /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages (from pytest->-r tests/requirements.txt (line 4))
+Requirement already satisfied: py>=1.5.0 in /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages (from pytest->-r tests/requirements.txt (line 4))
+Requirement already satisfied: argparse in /usr/lib/python2.7 (from unittest2->-r tests/requirements.txt (line 8))
+Collecting traceback2 (from unittest2->-r tests/requirements.txt (line 8))
+/home/travis/virtualenv/python2.7_with_system_site_packages/local/lib/python2.7/site-packages/pip/_vendor/requests/packages/urllib3/util/ssl_.py:122: InsecurePlatformWarning: A true SSLContext object is not available. This prevents urllib3 from configuring SSL appropriately and may cause certain SSL connections to fail. You can upgrade to a newer version of Python to solve this. For more information, see https://urllib3.readthedocs.io/en/latest/security.html#insecureplatformwarning.
+  InsecurePlatformWarning
+  Downloading https://files.pythonhosted.org/packages/17/0a/6ac05a3723017a967193456a2efa0aa9ac4b51456891af1e2353bb9de21e/traceback2-1.4.0-py2.py3-none-any.whl
+Collecting linecache2 (from traceback2->unittest2->-r tests/requirements.txt (line 8))
+/home/travis/virtualenv/python2.7_with_system_site_packages/local/lib/python2.7/site-packages/pip/_vendor/requests/packages/urllib3/util/ssl_.py:122: InsecurePlatformWarning: A true SSLContext object is not available. This prevents urllib3 from configuring SSL appropriately and may cause certain SSL connections to fail. You can upgrade to a newer version of Python to solve this. For more information, see https://urllib3.readthedocs.io/en/latest/security.html#insecureplatformwarning.
+  InsecurePlatformWarning
+  Downloading https://files.pythonhosted.org/packages/c7/a3/c5da2a44c85bfbb6eebcfc1dde24933f8704441b98fdde6528f4831757a6/linecache2-1.0.0-py2.py3-none-any.whl
+Installing collected packages: ddt, pytest-cov, linecache2, traceback2, unittest2
+Successfully installed ddt-1.2.0 linecache2-1.0.0 pytest-cov-2.6.0 traceback2-1.4.0 unittest2-1.1.0
+travis_time:end:1c7b659f:start=1544504826509374483,finish=1544504828123307021,duration=1613932538
+[0Ktravis_fold:end:install.1
+[0Ktravis_fold:start:install.2
+[0Ktravis_time:start:016cfd34
+[0K$ python setup.py install
+running install
+running bdist_egg
+running egg_info
+creating codecov.egg-info
+writing requirements to codecov.egg-info/requires.txt
+writing codecov.egg-info/PKG-INFO
+writing top-level names to codecov.egg-info/top_level.txt
+writing dependency_links to codecov.egg-info/dependency_links.txt
+writing entry points to codecov.egg-info/entry_points.txt
+writing manifest file 'codecov.egg-info/SOURCES.txt'
+reading manifest file 'codecov.egg-info/SOURCES.txt'
+writing manifest file 'codecov.egg-info/SOURCES.txt'
+installing library code to build/bdist.linux-x86_64/egg
+running install_lib
+running build_py
+creating build
+creating build/lib.linux-x86_64-2.7
+creating build/lib.linux-x86_64-2.7/codecov
+copying codecov/__main__.py -> build/lib.linux-x86_64-2.7/codecov
+copying codecov/__init__.py -> build/lib.linux-x86_64-2.7/codecov
+creating build/bdist.linux-x86_64
+creating build/bdist.linux-x86_64/egg
+creating build/bdist.linux-x86_64/egg/codecov
+copying build/lib.linux-x86_64-2.7/codecov/__main__.py -> build/bdist.linux-x86_64/egg/codecov
+copying build/lib.linux-x86_64-2.7/codecov/__init__.py -> build/bdist.linux-x86_64/egg/codecov
+byte-compiling build/bdist.linux-x86_64/egg/codecov/__main__.py to __main__.pyc
+byte-compiling build/bdist.linux-x86_64/egg/codecov/__init__.py to __init__.pyc
+creating build/bdist.linux-x86_64/egg/EGG-INFO
+copying codecov.egg-info/PKG-INFO -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying codecov.egg-info/SOURCES.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying codecov.egg-info/dependency_links.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying codecov.egg-info/entry_points.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying codecov.egg-info/requires.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying codecov.egg-info/top_level.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying codecov.egg-info/zip-safe -> build/bdist.linux-x86_64/egg/EGG-INFO
+creating dist
+creating 'dist/codecov-2.0.15-py2.7.egg' and adding 'build/bdist.linux-x86_64/egg' to it
+removing 'build/bdist.linux-x86_64/egg' (and everything under it)
+Processing codecov-2.0.15-py2.7.egg
+Copying codecov-2.0.15-py2.7.egg to /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages
+Adding codecov 2.0.15 to easy-install.pth file
+Installing codecov script to /home/travis/virtualenv/python2.7_with_system_site_packages/bin
+
+Installed /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages/codecov-2.0.15-py2.7.egg
+Processing dependencies for codecov==2.0.15
+Searching for requests>=2.7.9
+Reading https://pypi.python.org/simple/requests/
+Downloading https://files.pythonhosted.org/packages/7d/e3/20f3d364d6c8e5d2353c72a67778eb189176f08e873c9900e10c0287b84b/requests-2.21.0-py2.py3-none-any.whl#sha256=7bf2a778576d825600030a110f3c0e3e8edc51dfaafe1c146e39a2027784957b
+Best match: requests 2.21.0
+Processing requests-2.21.0-py2.py3-none-any.whl
+Installing requests-2.21.0-py2.py3-none-any.whl to /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages
+writing requirements to /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages/requests-2.21.0-py2.7.egg/EGG-INFO/requires.txt
+Adding requests 2.21.0 to easy-install.pth file
+
+Installed /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages/requests-2.21.0-py2.7.egg
+Searching for urllib3<1.25,>=1.21.1
+Reading https://pypi.python.org/simple/urllib3/
+Downloading https://files.pythonhosted.org/packages/62/00/ee1d7de624db8ba7090d1226aebefab96a2c71cd5cfa7629d6ad3f61b79e/urllib3-1.24.1-py2.py3-none-any.whl#sha256=61bf29cada3fc2fbefad4fdf059ea4bd1b4a86d2b6d15e1c7c0b582b9752fe39
+Best match: urllib3 1.24.1
+Processing urllib3-1.24.1-py2.py3-none-any.whl
+Installing urllib3-1.24.1-py2.py3-none-any.whl to /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages
+writing requirements to /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages/urllib3-1.24.1-py2.7.egg/EGG-INFO/requires.txt
+Adding urllib3 1.24.1 to easy-install.pth file
+
+Installed /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages/urllib3-1.24.1-py2.7.egg
+Searching for idna<2.9,>=2.5
+Reading https://pypi.python.org/simple/idna/
+Downloading https://files.pythonhosted.org/packages/14/2c/cd551d81dbe15200be1cf41cd03869a46fe7226e7450af7a6545bfc474c9/idna-2.8-py2.py3-none-any.whl#sha256=ea8b7f6188e6fa117537c3df7da9fc686d485087abf6ac197f9c46432f7e4a3c
+Best match: idna 2.8
+Processing idna-2.8-py2.py3-none-any.whl
+Installing idna-2.8-py2.py3-none-any.whl to /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages
+Adding idna 2.8 to easy-install.pth file
+
+Installed /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages/idna-2.8-py2.7.egg
+Searching for chardet<3.1.0,>=3.0.2
+Reading https://pypi.python.org/simple/chardet/
+Downloading https://files.pythonhosted.org/packages/bc/a9/01ffebfb562e4274b6487b4bb1ddec7ca55ec7510b22e4c51f14098443b8/chardet-3.0.4-py2.py3-none-any.whl#sha256=fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691
+Best match: chardet 3.0.4
+Processing chardet-3.0.4-py2.py3-none-any.whl
+Installing chardet-3.0.4-py2.py3-none-any.whl to /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages
+Adding chardet 3.0.4 to easy-install.pth file
+Installing chardetect script to /home/travis/virtualenv/python2.7_with_system_site_packages/bin
+
+Installed /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages/chardet-3.0.4-py2.7.egg
+Searching for certifi>=2017.4.17
+Reading https://pypi.python.org/simple/certifi/
+Downloading https://files.pythonhosted.org/packages/9f/e0/accfc1b56b57e9750eba272e24c4dddeac86852c2bebd1236674d7887e8a/certifi-2018.11.29-py2.py3-none-any.whl#sha256=993f830721089fef441cdfeb4b2c8c9df86f0c63239f06bd025a76a7daddb033
+Best match: certifi 2018.11.29
+Processing certifi-2018.11.29-py2.py3-none-any.whl
+Installing certifi-2018.11.29-py2.py3-none-any.whl to /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages
+Adding certifi 2018.11.29 to easy-install.pth file
+
+Installed /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages/certifi-2018.11.29-py2.7.egg
+Searching for coverage==3.7.1
+Best match: coverage 3.7.1
+Adding coverage 3.7.1 to easy-install.pth file
+Installing python2-coverage script to /home/travis/virtualenv/python2.7_with_system_site_packages/bin
+Installing python-coverage script to /home/travis/virtualenv/python2.7_with_system_site_packages/bin
+Installing python2.7-coverage script to /home/travis/virtualenv/python2.7_with_system_site_packages/bin
+
+Using /usr/lib/python2.7/dist-packages
+Finished processing dependencies for codecov==2.0.15
+travis_time:end:016cfd34:start=1544504828127653793,finish=1544504830372774794,duration=2245121001
+[0Ktravis_fold:end:install.2
+[0Ktravis_time:start:060ffa38
+[0K$ py.test tests/test.py --cov=codecov
+Traceback (most recent call last):
+  File "/home/travis/virtualenv/python2.7_with_system_site_packages/bin/py.test", line 11, in <module>
+    sys.exit(main())
+  File "/home/travis/virtualenv/python2.7_with_system_site_packages/local/lib/python2.7/site-packages/_pytest/config.py", line 50, in main
+    config = _prepareconfig(args, plugins)
+  File "/home/travis/virtualenv/python2.7_with_system_site_packages/local/lib/python2.7/site-packages/_pytest/config.py", line 160, in _prepareconfig
+    pluginmanager=pluginmanager, args=args)
+  File "/home/travis/virtualenv/python2.7_with_system_site_packages/local/lib/python2.7/site-packages/pluggy/__init__.py", line 617, in __call__
+    return self._hookexec(self, self._nonwrappers + self._wrappers, kwargs)
+  File "/home/travis/virtualenv/python2.7_with_system_site_packages/local/lib/python2.7/site-packages/pluggy/__init__.py", line 222, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File "/home/travis/virtualenv/python2.7_with_system_site_packages/local/lib/python2.7/site-packages/pluggy/__init__.py", line 216, in <lambda>
+    firstresult=hook.spec_opts.get('firstresult'),
+  File "/home/travis/virtualenv/python2.7_with_system_site_packages/local/lib/python2.7/site-packages/pluggy/callers.py", line 196, in _multicall
+    gen.send(outcome)
+  File "/home/travis/virtualenv/python2.7_with_system_site_packages/local/lib/python2.7/site-packages/_pytest/helpconfig.py", line 68, in pytest_cmdline_parse
+    config = outcome.get_result()
+  File "/home/travis/virtualenv/python2.7_with_system_site_packages/local/lib/python2.7/site-packages/pluggy/callers.py", line 77, in get_result
+    _reraise(*ex)  # noqa
+  File "/home/travis/virtualenv/python2.7_with_system_site_packages/local/lib/python2.7/site-packages/pluggy/callers.py", line 180, in _multicall
+    res = hook_impl.function(*args)
+  File "/home/travis/virtualenv/python2.7_with_system_site_packages/local/lib/python2.7/site-packages/_pytest/config.py", line 942, in pytest_cmdline_parse
+    self.parse(args)
+  File "/home/travis/virtualenv/python2.7_with_system_site_packages/local/lib/python2.7/site-packages/_pytest/config.py", line 1107, in parse
+    self._preparse(args, addopts=addopts)
+  File "/home/travis/virtualenv/python2.7_with_system_site_packages/local/lib/python2.7/site-packages/_pytest/config.py", line 1070, in _preparse
+    self.pluginmanager.load_setuptools_entrypoints('pytest11')
+  File "/home/travis/virtualenv/python2.7_with_system_site_packages/local/lib/python2.7/site-packages/pluggy/__init__.py", line 402, in load_setuptools_entrypoints
+    "Plugin %r could not be loaded: %s!" % (ep.name, e))
+pluggy.PluginValidationError: Plugin 'pytest_cov' could not be loaded: (coverage 3.7.1 (/usr/lib/python2.7/dist-packages), Requirement.parse('coverage>=4.4'))!
+travis_time:end:060ffa38:start=1544504830377185746,finish=1544504830720047472,duration=342861726
+[0K[31;1mThe command "py.test tests/test.py --cov=codecov" exited with 1.[0m
+
+
+
+Done. Your build exited with 1.
