@@ -3,3 +3,29 @@ Dios.roa.md
 Veneno.iot.md
 httpa://codecov.io.patch
 &dbdbdbdbdbdbdbdbfbdbbdbdbbbdbbdppqpqpqpdbbdgdbdbdbbdbcbdbdbfbdbfbdnb##bdbbddbbdbd
+language: php
+
+php:
+  - 7.1
+  - 7.2
+  - 7.3
+
+matrix:
+  fast_finish: true
+
+env:
+  - COMPOSER_FLAGS="--prefer-lowest"
+  - COMPOSER_FLAGS=""
+
+before_install:
+  - composer self-update
+
+install:
+  - composer update --no-interaction --prefer-dist $COMPOSER_FLAGS
+
+script:
+  - vendor/bin/phpunit
+
+notifications:
+  email:
+    - info@endroid.nl
