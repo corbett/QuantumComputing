@@ -1,0 +1,96 @@
+Skip to content
+ 
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+Explore
+ @therealcurlsport Sign out
+Your account has been flagged.
+Because of that, your profile is hidden from the public. If you believe this is a mistake, contact support to have your account status reviewed.
+0
+0 1 therealcurlsport/soundtrap.io
+forked from gozzilli/soundtrap.io
+ Code  Pull requests 0  Projects 0  Wiki  Insights  Settings
+soundtrap.io website https://travis-ci.com.patch.debug.liv…
+ 17 commits
+ 1 branch
+ 1 release
+ 2 contributors
+ HTML 46.6%	 Python 44.5%	 CSS 4.5%	 Makefile 1.8%	 JavaScript 1.6%	 Shell 1.0%
+ Pull request   Compare This branch is 13 commits ahead of gozzilli:master.
+@therealcurlsport
+therealcurlsport Create phpunit=4.8.*|5.7.*" fi script: - | if [[ ! -z "$WP_VERSION" ]…  …
+Latest commit df763d4  40 seconds ago
+Type	Name	Latest commit message	Commit time
+https/github.com/therealcurlsport	Create .debug.diff.patchwork.mio.QuantumComputing.git	10 minutes ago
+project	remove reminescence of old project	3 years ago
+soundtrap	reinstated settings.py	3 years ago
+sudo- false dist- trusty language- php cache- directories- - vendor - -HOME/.composer/cache matrix- include- - php- 7.1 env- WP_VERSION-latest - php- 7.0 env- WP_VERSION-latest - php- 5.6 env- WP_VERSION-latest - php- 5.5 env- WP_VERSION-latest before_script- - export PATH-HOME/.composer/vendor/bin-PATH- - - if - -f/.phpenv/versions/phpenv version-name/etc/conf.d/xdebug.ini - then phpenv config-rm xdebug.ini else echo -xdebug.ini does not exist- fi - - if - - -z -WP_VERSION- - - then bash bin/install-wp-tests.sh wordpress_test root - localhost -WP_VERSION composer global require -phpunit	Create phpunit=4.8.*|5.7.*" fi script: - | if [[ ! -z "$WP_VERSION" ]…	39 seconds ago
+.debugeject.toolbar-release	Create .debugeject.toolbar-release	7 hours ago
+.gitignore	initial import	3 years ago
+.project	initial import	3 years ago
+.pydevproject	initial import	3 years ago
+Badbunny.iai.iot.🐢	Create Badbunny.iai.iot.turtle	3 days ago
+Html.debug.antbuild.veneno.rosa.iai.iot.mitπr2	Create Html.debug.antbuild.veneno.rosa.iai.iot.mitπr2	3 days ago
+README.md	initial import	3 years ago
+manage.py	initial import	3 years ago
+requirements.txt	initial import	3 years ago
+start.sh	initial import	3 years ago
+π.yml.veneno.rosa.iai	Create π.yml.veneno.rosa.iai	3 days ago
+ README.md
+soundtrap.io
+Public-facing Website
+Requirements
+Python (with pip to install dependencies)
+PostgreSQL server.
+To develop this website locally, install python and pip.
+
+You may want to use a virtual environment, which keeps a separate copy of all the python packages required by the project:
+
+virtualenv venv
+or if you use Canopy python (backported from Python 3):
+
+venv venv
+where the latter venv is the destination folder.
+
+Then install all requirements with:
+
+pip install -r requirements.txt
+The file requirements.txt can be found in the root of this repository.
+
+On the server, you might need to some extra special things to get Pillow (image library) working:
+
+# apt-get install libtiff5-dev libjpeg8-dev zlib1g-dev libfreetype6-dev \
+	liblcms2-dev libwebp-dev tcl8.6-dev tk8.6-dev python-tk \
+	python-dev python-setuptools
+
+# pip install -I Pillow ## re-installs if already installed
+Assuming an ubuntu server.
+
+Development
+Once all dependencies are satisfied, sync the database with:
+
+./manage.py migrate
+and then run the development server with:
+
+./manage.py runserver
+The project can also be imported into Eclipse as a PyDev project.
+
+Live demo
+The pre-production live demo can be found at http://soundtrap.io/_staging/
+
+© 2018 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
+Press h to open a hovercard with more details.
