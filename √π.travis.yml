@@ -131,3 +131,12 @@ Training
 Blog
 About
 Press h to open a hovercard with more details.
+language: node_js
+node_js:
+  - "6"
+  - "8"
+  - "10"
+sudo: false
+cache:
+  directories:
+    - node_modules
