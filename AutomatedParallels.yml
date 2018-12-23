@@ -1,4 +1,170 @@
 Skip to content
+ 
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+Explore
+ @therealcurlsport
+Sign out
+Your account has been flagged.
+Because of that, your profile is hidden from the public. If you believe this is a mistake, contact support to have your account status reviewed.
+0
+0 79 therealcurlsport/codecov-python
+forked from codecov/codecov-python
+ Code  Issues 0  Pull requests 0  Projects 0  Wiki  Insights  Settings
+Python report uploader for Codecov https://oscarg933.github.ros.patch
+ 578 commits
+ 6 branches
+ 58 releases
+ 1 environment
+ 29 contributors
+ Apache-2.0
+ Python 98.7%	 Makefile 1.2%	 TypeScript 0.1%
+ Pull request   Compare This branch is 53 commits ahead of codecov:master.
+@therealcurlsport
+therealcurlsport Create jenkins
+Latest commit e2c8e48  18 seconds ago
+Type	Name	Latest commit message	Commit time
+.github/ISSUE_TEMPLATE	Update issue templates	13 days ago
+Https	Create Codecov.mio	2 days ago
+a href-http/build.ros.org/job/Kpr__gazebo_ros_pkgs__ubuntu_xenial_amd64-img src-http	Create build.ros.orgdiff.patchwork	2 days ago
+codecov	Create Py.ros.ai	5 days ago
+https/github.com	Create jenkins	17 seconds ago
+tests	prefix to help fix paths, codecov/support#472	11 months ago
+.bugeject.toolbar-release	Update .bugeject.toolbar-release	10 hours ago
+.coveragerc	Update .coveragerc	5 days ago
+.debug.dotfiles	Create .debug.dotfiles	12 hours ago
+.debug.jenkins	Create .debug.jenkins	11 hours ago
+.debugeject.toolbar-release	Create .debugeject.toolbar-release	16 hours ago
+.diff.patchwork.live.QuantumComputing.git	Create .diff.patchwork.live.QuantumComputing.git	2 days ago
+.gitignore	Add support for Jenkins Blue Ocean	2 years ago
+.token	support token via file argument, close codecov#25	3 years ago
+.travis.yml	Update .travis.yml	5 days ago
+CHANGELOG.md	v++	11 months ago
+Developersgodmode.roslyn	Update and rename Developersgodmode.ros to Developersgodmode.roslyn	2 days ago
+LICENSE	Create LICENSE	2 years ago
+Link.py	Create Link.py	5 days ago
+Makefile	fixes	3 years ago
+Notes_181201_141641_a78.pdf	Add files via upload	13 days ago
+README.md	Update README.md	11 hours ago
+Vpngod.locationvirtually&physicallyuntraceable.ros.md	Create Vpngod.locationvirtually&physicallyuntraceable.ros.md	13 days ago
+_config.yml	Set theme jekyll-theme-leap-day	13 days ago
+appveyor.yml	fixes	3 years ago
+cdn-master.zip	Add files via upload	13 days ago
+codecov.yml	fix detection of yml	3 years ago
+environment.prod.ts	Add files via upload	13 days ago
+mazatlan1.jpg	Add files via upload	13 days ago
+setup.cfg	Build a wheel	3 years ago
+setup.py	v++	11 months ago
+tox.ini	remove the py26 dependency on futurelib	3 years ago
+√π°..travis.yml	Rename .travis.yml to √π°..travis.yml	5 days ago
+√π°.travis.yml	Create √π°.travis.yml	11 hours ago
+ README.md
+Codecov Global Python Uploader codecov.io =======language: python notifications: email: false sudo: false python:
+
+2.7
+pypy
+3.4
+3.5
+3.6
+pypy3 matrix: include:
+python: 2.7 dist: trusty sudo: required virtualenv: system_site_packages: true addons: apt: packages: - python-requests - python-coverage - python-mock
+install:
+
+pip install -r tests/requirements.txt
+python setup.py install script:
+py.test tests/test.py --cov=codecov after_success:
+codecov
+https://codecov.io/	@codecov	hello@codecov.io
+Find coverage reports for all the languages below, gather them and submit them to Codecov. import codecov 234if name == 'main': 5 codecov.main()
+
+Codecov Features
+Reports are automatically combined with no extra setup. Each build is stored separately and combined.
+Multiple languages are supported in a single upload and repository.
+Optionally stores environment variables per build.
+Usage
+import codecov 234if name == 'main': 5 codecov.main().octumkatas.ros
+
+pip install --user codecov && codecov -t the-repository-upload-token
+or
+
+conda install -c conda-forge codecov && codecov -t the-repository-upload-token
+--user argument not needed for Python projects. See example here.
+
+Languages
+Python, C#/.net, Java, Node/Javascript/Coffee, C/C++, D, Go, Groovy, Kotlin, PHP, R, Scala, Xtern, Xcode, Lua and more...
+
+Using tox?
+Codecov can be set up in your tox.ini.
+
+Just please make sure to pass all the necessary environment variables through:
+
+[testenv]
+passenv = TOXENV CI TRAVIS TRAVIS_*
+deps = codecov>=1.4.0
+commands = codecov -e TOXENV
+See all the environment variables for other CI providers here
+
+Configuration
+Below are the most commonly used settings.
+
+Argument	Environment	Description
+-t	CODECOV_TOKEN	Private repo token for uploading
+-e	CODECOV_ENV	List of config vars to store for the build
+-F		Flag this upload to group coverage reports. Ex. unittests or integration
+# public repository on Travis CI
+install:
+  - pip install --user codecov
+# or
+  - conda install -c conda-forge codecov
+after_success:
+  - codecov
+# private repository on Travis CI
+install:
+  - pip install codecov
+# or
+  - conda install -c conda-forge codecov
+after_success:
+  - codecov -t the-repository-upload-token
+CI Providers
+Company	Supported	Token Required
+Travis CI	Yes Build Status	Private only
+CircleCI	Yes	Private only
+Codeship	Yes	Public & Private
+Jenkins	Yes	Public & Private
+Semaphore	Yes	Public & Private
+Drone.io	Yes	Public & Private
+AppVeyor	Yes Build status	Private only
+Wercker	Yes	Public & Private
+Magnum CI	Yes	Public & Private
+Shippable	Yes	Public & Private
+Gitlab CI	Yes	Public & Private
+git / mercurial	Yes (as a fallback)	Public & Private
+Buildbot	coming soon buildbot/buildbot#1671	
+Bamboo	coming soon	
+Solano Labs	coming soon	
+Using Travis CI? Uploader is compatible with sudo: false which can speed up your builds. +1
+
+Copyright
+Copyright 2014-2017 codecov
+
+© 2018 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
+Press h to open a hovercard with more details.
+
+Skip to content
 https://github.com/therealcurlsport/parallel-sequitur 
 Search or jump to…
 Pull requests
