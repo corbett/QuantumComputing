@@ -1,0 +1,169 @@
+Skip to content
+Your account has been flagged.
+Because of that, your profile is hidden from the public. If you believe this is a mistake, contact support to have your account status reviewed.
+
+color pixel office
+Repositories0
+Code1M
+Commits223
+Issues935
+Marketplace0
+Topics0
+Wikis476
+Users0
+Languages
+238,493 HTML
+202,313 PHP
+202,022 JavaScript
+107,471 C
+70,132 Text
+50,971 Gettext Catalog
+34,588 CSV
+18,024 C++
+15,198 XML
+14,255 CSS
+Advanced search 
+1,207,271 code results
+@heisedebaise
+heisedebaise/tephra – OfficeHelperImpl.java
+Showing the top three matches Last indexed on Jan 15
+Java
+package org.lpw.tephra.office;
+
+import com.alibaba.fastjson.JSONObject;
+import org.lpw.tephra.util.Context;
+import javax.inject.Inject;
+import java.awt.Color;
+
+/**
+ * @author lpw
+ */
+@Component("tephra.office.helper")
+@qwergram
+qwergram/Snowman – s_05.py
+Showing the top three matches Last indexed on Jul 3, 2018
+Python
+    do("powershell start microsoft-edge:http://aka.ms/365")
+    script1 = """WinActivate, Sign in to your account
+    PixelGetColor, EOffice, 1894, 283, RGB
+def download_office_exe():
+    script1 = """WinActivate, Office 365
+    sleep 500
+    PixelGetColor, EOfficeLogo, 525, 385, RGB ;0x0D9390F
+@raygam
+raygam/nai_10_2014_40 – phoneDeptList.aspx.vb
+Showing the top two matches Last indexed on Jul 9, 2018
+Visual Basic
+        Dim c1 As TableCell = New TableCell
+        c1.Height = Unit.Pixel(p_size)
+        rowItem.Cells.Add(c1)
+        p_tbl.Rows.Add(rowItem)
+            Dim rowItem As TableRow
+            Dim c1 As TableCell
+            Dim strTextSpacer As String = ""
+            Dim strOffice As String = ""
+@justAngry711
+justAngry711/image-to-xls – example.php
+Showing the top six matches Last indexed on Dec 12, 2018
+PHP
+use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Worksheet\ColumnCellIterator;
+use PhpOffice\PhpSpreadsheet\Worksheet\ColumnIterator;
+        $formattedColor = strtoupper((string)dechex($colorIndex));
+        $imagePixelBuffer[$x][$y] = $formattedColor;
+@kong88
+kong88/officeReader – SetPixelV.java
+Showing the top four matches Last indexed on Jul 11, 2018
+Java
+import android.graphics.Point;
+import java.io.IOException;
+
+import com.wxiwei.office.java.awt.Color;
+import com.wxiwei.office.thirdpart.emf.EMFInputStream;
+import com.wxiwei.office.thirdpart.emf.EMFTag;
+
+/**
+ * SetPixelV TAG.
+@heisedebaise
+heisedebaise/tephra – ShadowImpl.java
+Showing the top four matches Last indexed on Sep 12, 2018
+Java
+import javax.inject.Inject;
+import java.awt.Color;
+
+/**
+ * @author lpw
+ */
+@Component("tephra.office.pptx.parser.shadow")
+        shadow.put("angle", xslfShadow.getAngle());
+        shadow.put("blur", officeHelper.pointToPixel(xslfShadow.getBlur()));
+@AIRLab-POLIMI
+AIRLab-POLIMI/predictivebenchmarking – evaluation_segmentation.cpp
+Showing the top three matches Last indexed on Jul 3, 2018
+C++
+#include <ros/package.h>
+
+#include <map>
+#include <vector>
+#include <set>
+
+
+//int pixel_number_calculation (cv::Mat matrix)
+	VectorOfPointSets gt_points_vector;	// room points: gt[room id][pixel index]
+	if (compute_gt_map_color == true)
+	{
+		cv::Mat bw_map;
+		cv::threshold(gt_map, bw_map, 250, 255, cv::THRESH_BINARY);
+@zjtone
+zjtone/Android-Office – SetPixelV.java
+Showing the top four matches Last indexed on Aug 11, 2018
+Java
+import android.graphics.Point;
+import java.io.IOException;
+
+import com.wxiwei.office.java.awt.Color;
+import com.wxiwei.office.thirdpart.emf.EMFInputStream;
+import com.wxiwei.office.thirdpart.emf.EMFTag;
+
+/**
+ * SetPixelV TAG.
+@zhaozhao-ak
+zhaozhao-ak/office – SetPixelV.java
+Showing the top four matches Last indexed on Jul 7, 2018
+Java
+import android.graphics.Point;
+import java.io.IOException;
+
+import com.wxiwei.office.java.awt.Color;
+import com.wxiwei.office.thirdpart.emf.EMFInputStream;
+import com.wxiwei.office.thirdpart.emf.EMFTag;
+
+/**
+ * SetPixelV TAG.
+@Hjwallace
+Hjwallace/CS-120-Game – Project4.py
+Showing the top seven matches Last indexed on Jul 14, 2018
+Python
+      for y in range(447,457):
+        p = getPixel(map,x,y)
+        setColor(p,color)
+        
+  if location == "office":
+      for y in range(388,398):
+        p = getPixel(map,x,y)
+        setColor(p,color)
+        
+  if location == "guard room":
+© 2019 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
+Press h to open a hovercard with more details.
